@@ -93,7 +93,7 @@ def listar():
         
     except Exception as e:
         flash(f'Erro ao listar colaboradores: {str(e)}', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
 
 @ci_bp.route('/pesquisa-rapida')

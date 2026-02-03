@@ -1,3 +1,5 @@
+from flask_login import UserMixin
+
 """
 Modelos do banco de dados para o Sistema de Gestão de Colaboradores Internos.
 """
@@ -61,6 +63,30 @@ class BaseModel(db.Model):
         nullable=False
     )
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte modelo para dicionário."""
         raise NotImplementedError("Subclasses devem implementar to_dict()")
@@ -84,7 +110,7 @@ class TimestampMixin:
 # MODELO DE USUÁRIO
 # ============================================================================
 
-class Usuario(BaseModel):
+class Usuario(UserMixin, BaseModel):
     """Modelo de usuário do sistema."""
     __tablename__ = 'usuarios'
     
@@ -451,6 +477,30 @@ class NumeroCadastro(BaseModel):
         fim = self.data_fim or date.today()
         return (fim - self.data_inicio).days
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte NC para dicionário."""
         return {
@@ -516,6 +566,30 @@ class Dependente(BaseModel):
         born = self.data_nascimento
         return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte dependente para dicionário."""
         return {
@@ -605,6 +679,30 @@ class PlanoSaude(BaseModel):
         
         return float(total) if total else 0.0
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte plano de saúde para dicionário."""
         return {
@@ -703,6 +801,30 @@ class AtendimentoCoparticipacao(BaseModel):
             return 0.0
         return (self.valor_coparticipacao_float / self.valor_base_float) * 100
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte atendimento para dicionário."""
         return {
@@ -776,6 +898,30 @@ class PlanoOdontologico(BaseModel):
         fim = self.data_fim or date.today()
         return (fim.year - self.data_inicio.year) * 12 + (fim.month - self.data_inicio.month)
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte plano odontológico para dicionário."""
         return {
@@ -837,6 +983,30 @@ class HistoricoCI(BaseModel):
         valid_codes = current_app.config.get('VALID_COMPANY_CODES', {})
         return valid_codes.get(self.cod_empresa, self.cod_empresa)
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte histórico para dicionário."""
         return {
@@ -890,6 +1060,30 @@ class ImportacaoLog(BaseModel):
         usuario = Usuario.query.get(self.usuario_id)
         return usuario.nome if usuario else None
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte log de importação para dicionário."""
         return {
@@ -961,6 +1155,30 @@ class Alerta(BaseModel):
         self.data_resolucao = None
         self.updated_at = get_utc_now()
     
+
+    # ========================================================================
+    # MÉTODOS DO FLASK-LOGIN
+    # ========================================================================
+    
+    @property
+    def is_authenticated(self):
+        """Retorna True se o usuário está autenticado."""
+        return True
+    
+    @property
+    def is_active(self):
+        """Retorna True se o usuário está ativo."""
+        return self.ativo
+    
+    @property
+    def is_anonymous(self):
+        """Retorna False - usuários reais não são anônimos."""
+        return False
+    
+    def get_id(self):
+        """Retorna o ID do usuário como string (requerido pelo Flask-Login)."""
+        return str(self.id)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converte alerta para dicionário."""
         return {

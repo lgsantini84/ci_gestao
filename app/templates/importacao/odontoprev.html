@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block title %}Importar Odontoprev - Sistema CI{% endblock %}
+
+{% block page_title %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <i class="fas fa-tooth me-2"></i>Importar Dados - ODONTOPREV
+    </div>
+    <div>
+        <a href="{{ url_for('importacao.index') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Voltar
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-odontoprev text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-tooth me-2"></i>
+                        <strong>ODONTOPREV - Importação de Dados</strong>
+                    </div>
+                    <span class="badge bg-light text-dark">PDF</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Instruções -->
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Instruções:</strong> Selecione o arquivo PDF da fatura detalhada da Odontoprev 
+                    e a empresa correspondente.
+                </div>
+                
+                <!-- Formulário de Upload -->
+                <form method="POST" enctype="multipart/form-data" id="formOdontoprev">
+                    <div class="mb-4">
+                        <label for="empresa" class="form-label">
+                            <i class="fas fa-building me-1"></i>Empresa
+                        </label>
+                        <select class="form-select" id="empresa" name="empresa" required>
+                            <option value="">Selecione a empresa...</option>
+                            <option value="PSF">PASCHOALOTTO</option>
+                            <option value="001">Empresa 001</option>
+                            <option value="002">Empresa 002</option>
+                            <option value="003">Empresa 003</option>
+                            <option value="OUTRA">Outra empresa</option>
+                        </select>
+                        <small class="text-muted">Selecione a empresa dos beneficiários</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="file" class="form-label">
+                            <i class="fas fa-file-pdf me-1"></i>Arquivo PDF
+                        </label>
+                        <div class="card border-dashed">
+                            <div class="card-body text-center py-5" id="dropZone">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5>Arraste e solte o arquivo PDF aqui</h5>
+                                <p class="text-muted">ou</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" id="file" name="file" 
+                                           accept=".pdf" required>
+                                </div>
+                                <small class="text-muted">
+                                    Tamanho máximo: 16MB | Formatos aceitos: PDF
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Informações do Arquivo -->
+                    <div id="fileInfo" class="d-none">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-file-alt me-2"></i>Informações do Arquivo
+                                </h6>
+                                <div id="fileDetails"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Opções Avançadas -->
+                    <div class="accordion mb-4" id="accordionOptions">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapseOptions">
+                                    <i class="fas fa-cog me-2"></i>Opções Avançadas
+                                </button>
+                            </h2>
+                            <div id="collapseOptions" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               id="sobrescrever" name="sobrescrever">
+                                        <label class="form-check-label" for="sobrescrever">
+                                            Sobrescrever dados existentes
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               id="validar_cpf" name="validar_cpf" checked>
+                                        <label class="form-check-label" for="validar_cpf">
+                                            Validar CPF dos beneficiários
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               id="criar_colaboradores" name="criar_colaboradores">
+                                        <label class="form-check-label" for="criar_colaboradores">
+                                            Criar colaboradores não encontrados
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="btnImportar">
+                            <i class="fas fa-upload me-2"></i>Iniciar Importação
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" 
+                                onclick="validarPrevia()" id="btnValidar">
+                            <i class="fas fa-check me-2"></i>Validar Arquivo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Informações sobre o Processo -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fas fa-question-circle me-2"></i>Como funciona a importação?
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Processo de Importação</h6>
+                        <ol class="small">
+                            <li>O sistema lê o arquivo PDF da Odontoprev</li>
+                            <li>Extrai informações dos beneficiários</li>
+                            <li>Identifica titulares e dependentes</li>
+                            <li>Vincula aos números de cadastro (NC)</li>
+                            <li>Cria/atualiza os planos odontológicos</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Dados Processados</h6>
+                        <ul class="small">
+                            <li><strong>Chapa:</strong> NC do colaborador</li>
+                            <li><strong>Nome:</strong> Nome do beneficiário</li>
+                            <li><strong>Parentesco:</strong> Titular ou Dependente</li>
+                            <li><strong>Valor Individual:</strong> Valor por pessoa</li>
+                            <li><strong>Data:</strong> Competência do plano</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Importante:</strong> Certifique-se de que o arquivo PDF é da 
+                    fatura detalhada da Odontoprev e contém a relação de beneficiários.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exemplos de Arquivos -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fas fa-images me-2"></i>Exemplos de Arquivos Válidos
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="card border-dashed mb-3">
+                            <div class="card-body">
+                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                <h6>Fatura Detalhada</h6>
+                                <small class="text-muted">FATURA_DETALHADA_ODONTOPREV_12_2025.pdf</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="card border-dashed mb-3">
+                            <div class="card-body">
+                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                <h6>Relação de Associados</h6>
+                                <small class="text-muted">RELACAO_ASSOCIADOS_ODONTOPREV_2025.pdf</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="card border-dashed mb-3">
+                            <div class="card-body">
+                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                <h6>Extrato Mensal</h6>
+                                <small class="text-muted">EXTRATO_ODONTOPREV_01_2026.pdf</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Resultado -->
+<div class="modal fade" id="modalResultado" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resultado da Importação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="resultadoConteudo">
+                    <!-- Conteúdo será preenchido via JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <a href="{{ url_for('importacao.historico') }}" class="btn btn-primary">
+                    <i class="fas fa-history me-2"></i>Ver Histórico
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bg-odontoprev {
+        background: linear-gradient(135deg, #00a859 0%, #008a4c 100%);
+    }
+    
+    .border-dashed {
+        border: 2px dashed #dee2e6 !important;
+        border-radius: 10px;
+    }
+    
+    .border-dashed:hover {
+        border-color: #00a859 !important;
+        background-color: rgba(0, 168, 89, 0.05);
+    }
+    
+    #dropZone.drag-over {
+        border-color: #00a859 !important;
+        background-color: rgba(0, 168, 89, 0.1);
+    }
+    
+    .progress {
+        height: 25px;
+        border-radius: 12px;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(0, 168, 89, 0.1);
+        color: #008a4c;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let fileToUpload = null;
+    
+    // Drag and drop
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('file');
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drag-over');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        if (files.length && files[0].type === 'application/pdf') {
+            fileInput.files = files;
+            mostrarInfoArquivo(files[0]);
+        } else {
+            alert('Por favor, selecione apenas arquivos PDF.');
+        }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            mostrarInfoArquivo(e.target.files[0]);
+        }
+    });
+    
+    function mostrarInfoArquivo(file) {
+        fileToUpload = file;
+        
+        const fileInfo = document.getElementById('fileInfo');
+        const fileDetails = document.getElementById('fileDetails');
+        
+        fileInfo.classList.remove('d-none');
+        fileDetails.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Nome:</strong> ${file.name}</p>
+                    <p><strong>Tamanho:</strong> ${formatBytes(file.size)}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Tipo:</strong> ${file.type}</p>
+                    <p><strong>Última modificação:</strong> ${new Date(file.lastModified).toLocaleDateString()}</p>
+                </div>
+            </div>
+            <div class="alert alert-success mt-2">
+                <i class="fas fa-check-circle me-2"></i>
+                Arquivo PDF carregado com sucesso.
+            </div>
+        `;
+    }
+    
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+        
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+    
+    function validarPrevia() {
+        if (!fileToUpload) {
+            alert('Por favor, selecione um arquivo primeiro.');
+            return;
+        }
+        
+        const empresa = document.getElementById('empresa').value;
+        if (!empresa) {
+            alert('Por favor, selecione a empresa.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('file', fileToUpload);
+        formData.append('operadora', 'ODONTOPREV');
+        
+        // Mostrar loading
+        const btnValidar = document.getElementById('btnValidar');
+        const originalText = btnValidar.innerHTML;
+        btnValidar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Validando...';
+        btnValidar.disabled = true;
+        
+        fetch('{{ url_for("importacao.api_validar") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const modal = new bootstrap.Modal(document.getElementById('modalResultado'));
+                document.getElementById('resultadoConteudo').innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle fa-2x me-2"></i>
+                        <h4 class="alert-heading">Arquivo Válido!</h4>
+                        <p>O arquivo está no formato correto para importação.</p>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-primary">${data.linhas}</h3>
+                                    <p class="text-muted">Registros encontrados</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-success">${data.colunas.length}</h3>
+                                    <p class="text-muted">Colunas identificadas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Colunas detectadas:</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            ${data.colunas.map(col => `<span class="badge bg-primary">${col}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Pré-visualização (5 primeiros registros):</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        ${data.colunas.map(col => `<th>${col}</th>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.preview.map(row => `
+                                        <tr>
+                                            ${data.colunas.map(col => `<td>${row[col] || ''}</td>`).join('')}
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                modal.show();
+            } else {
+                alert('Erro na validação: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao validar arquivo. Tente novamente.');
+        })
+        .finally(() => {
+            btnValidar.innerHTML = originalText;
+            btnValidar.disabled = false;
+        });
+    }
+    
+    // Submissão do formulário
+    document.getElementById('formOdontoprev').addEventListener('submit', function(e) {
+        if (!fileToUpload) {
+            e.preventDefault();
+            alert('Por favor, selecione um arquivo.');
+            return;
+        }
+        
+        const empresa = document.getElementById('empresa').value;
+        if (!empresa) {
+            e.preventDefault();
+            alert('Por favor, selecione a empresa.');
+            return;
+        }
+        
+        // Mostrar loading no botão de importar
+        const btnImportar = document.getElementById('btnImportar');
+        const originalText = btnImportar.innerHTML;
+        btnImportar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
+        btnImportar.disabled = true;
+        
+        // Permitir o envio do formulário
+        return true;
+    });
+    
+    // Reset do formulário quando o modal for fechado
+    document.getElementById('modalResultado').addEventListener('hidden.bs.modal', function() {
+        const btnImportar = document.getElementById('btnImportar');
+        btnImportar.innerHTML = '<i class="fas fa-upload me-2"></i>Iniciar Importação';
+        btnImportar.disabled = false;
+    });
+</script>
+{% endblock %}

@@ -53,7 +53,7 @@ def login():
     # Se usuário já está logado, redireciona para home
     if current_user.is_authenticated:
         flash('Você já está logado no sistema.', 'info')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     if request.method == 'GET':
         next_url = request.args.get('next', '')
@@ -110,7 +110,7 @@ def login():
         if next_url and next_url.startswith('/'):
             return redirect(next_url)
         
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
         
     except Exception as e:
         db.session.rollback()
@@ -218,7 +218,7 @@ def primeiro_acesso():
         login_user(usuario)
         
         flash('Conta de administrador criada com sucesso!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
         
     except Exception as e:
         db.session.rollback()
@@ -269,7 +269,7 @@ def alterar_senha():
         db.session.commit()
         
         flash('Senha alterada com sucesso!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
         
     except Exception as e:
         db.session.rollback()
@@ -348,7 +348,7 @@ def listar_usuarios():
         
     except Exception as e:
         flash(f'Erro ao listar usuários: {str(e)}', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
 
 @auth_bp.route('/usuarios/novo', methods=['GET', 'POST'])
@@ -832,7 +832,7 @@ def esqueci_senha():
     Nota: Em produção, implementar envio de email.
     """
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     if request.method == 'GET':
         return render_template('auth/esqueci_senha.html')
@@ -925,7 +925,7 @@ def acesso_negado(error):
     Handler para erro 403 (Acesso negado).
     """
     flash('Acesso negado. Permissão insuficiente.', 'error')
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))
 
 
 # ============================================================================
@@ -984,4 +984,4 @@ def session_clear():
     session.modified = True
     
     flash('Sessão limpa', 'info')
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))

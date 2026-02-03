@@ -1,0 +1,789 @@
+{% extends "base.html" %}
+
+{% block title %}Importar Dados - Sistema CI{% endblock %}
+
+{% block page_title %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <i class="fas fa-file-import me-2"></i>Importar Dados
+    </div>
+    <div>
+        <a href="{{ url_for('importacao.historico') }}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-history me-1"></i>Ver Histórico
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-2"></i>Informações sobre Importação
+            </div>
+            <div class="card-body">
+                <p>Use esta página para importar dados de diferentes operadoras. O sistema suporta os seguintes formatos:</p>
+                
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-left-primary">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary">
+                                    <i class="fas fa-file-pdf me-2"></i>PDF
+                                </h6>
+                                <ul class="mb-0">
+                                    <li>Odontoprev - Fatura Detalhada</li>
+                                    <li>Extratos detalhados</li>
+                                    <li>Relatórios de beneficiários</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 border-left-success">
+                            <div class="card-body">
+                                <h6 class="card-title text-success">
+                                    <i class="fas fa-file-excel me-2"></i>Excel
+                                </h6>
+                                <ul class="mb-0">
+                                    <li>Unimed - Relatórios</li>
+                                    <li>Hapvida - Planilhas</li>
+                                    <li>Sulamérica - Relatórios</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 border-left-info">
+                            <div class="card-body">
+                                <h6 class="card-title text-info">
+                                    <i class="fas fa-file-csv me-2"></i>CSV
+                                </h6>
+                                <ul class="mb-0">
+                                    <li>Hapvida - Exportações</li>
+                                    <li>Unimed - Arquivos texto</li>
+                                    <li>Outros formatos delimitados</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Atenção:</strong> Certifique-se de que o arquivo está no formato correto antes de importar.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cards de Importação por Operadora -->
+<div class="row">
+    <!-- Odontoprev -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-odontoprev text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-tooth me-2"></i>
+                        <strong>ODONTOPREV</strong>
+                    </div>
+                    <span class="badge bg-light text-dark">PDF</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">Importar Dados da Odontoprev</h6>
+                <p class="card-text">
+                    Importe dados de beneficiários da Odontoprev a partir de arquivos PDF 
+                    de fatura detalhada.
+                </p>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Formato esperado:</small></label>
+                    <ul class="small mb-0">
+                        <li>PDF da fatura detalhada</li>
+                        <li>Extrato de beneficiários</li>
+                        <li>Relatório mensal</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Colunas processadas:</small></label>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-secondary">Chapa</span>
+                        <span class="badge bg-secondary">Nome</span>
+                        <span class="badge bg-secondary">Parentesco</span>
+                        <span class="badge bg-secondary">Valor</span>
+                        <span class="badge bg-secondary">Data</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('importacao.odontoprev') }}" class="btn btn-primary w-100">
+                    <i class="fas fa-upload me-2"></i>Importar Odontoprev
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hapvida -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-hapvida text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-heartbeat me-2"></i>
+                        <strong>HAPVIDA</strong>
+                    </div>
+                    <span class="badge bg-light text-dark">CSV/Excel</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">Importar Dados do Hapvida</h6>
+                <p class="card-text">
+                    Importe dados de beneficiários do Hapvida a partir de arquivos CSV 
+                    ou Excel.
+                </p>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Formato esperado:</small></label>
+                    <ul class="small mb-0">
+                        <li>CSV com ponto e vírgula</li>
+                        <li>Excel (xlsx, xls)</li>
+                        <li>Relatório de beneficiários</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Colunas processadas:</small></label>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-secondary">Matrícula</span>
+                        <span class="badge bg-secondary">Nome</span>
+                        <span class="badge bg-secondary">CPF</span>
+                        <span class="badge bg-secondary">Plano</span>
+                        <span class="badge bg-secondary">Valor</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('importacao.hapvida') }}" class="btn btn-success w-100">
+                    <i class="fas fa-upload me-2"></i>Importar Hapvida
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Unimed -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-unimed text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-hospital me-2"></i>
+                        <strong>UNIMED</strong>
+                    </div>
+                    <span class="badge bg-light text-dark">Excel/CSV</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">Importar Dados da Unimed</h6>
+                <p class="card-text">
+                    Importe dados de beneficiários da Unimed a partir de arquivos Excel 
+                    ou CSV.
+                </p>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Formato esperado:</small></label>
+                    <ul class="small mb-0">
+                        <li>Excel com múltiplas planilhas</li>
+                        <li>CSV delimitado por vírgula</li>
+                        <li>Relatório mensal</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Colunas processadas:</small></label>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-secondary">NC</span>
+                        <span class="badge bg-secondary">Nome</span>
+                        <span class="badge bg-secondary">CPF</span>
+                        <span class="badge bg-secondary">Contrato</span>
+                        <span class="badge bg-secondary">Coparticipação</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('importacao.unimed') }}" class="btn btn-info w-100">
+                    <i class="fas fa-upload me-2"></i>Importar Unimed
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sulamérica -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-sulamerica text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <strong>SULAMÉRICA</strong>
+                    </div>
+                    <span class="badge bg-light text-dark">Excel/CSV</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">Importar Dados da Sulamérica</h6>
+                <p class="card-text">
+                    Importe dados de beneficiários da Sulamérica a partir de arquivos Excel 
+                    ou CSV.
+                </p>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Formato esperado:</small></label>
+                    <ul class="small mb-0">
+                        <li>Excel estruturado</li>
+                        <li>CSV com cabeçalho</li>
+                        <li>Relatório de fatura</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label"><small>Colunas processadas:</small></label>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-secondary">NC</span>
+                        <span class="badge bg-secondary">Nome</span>
+                        <span class="badge bg-secondary">CPF</span>
+                        <span class="badge bg-secondary">Plano</span>
+                        <span class="badge bg-secondary">Valor</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('importacao.sulamerica') }}" class="btn btn-warning w-100">
+                    <i class="fas fa-upload me-2"></i>Importar Sulamérica
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Importação Genérica -->
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-cogs me-2"></i>Importação Avançada
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">Importação Genérica</h6>
+                <p class="card-text">
+                    Use esta opção para importar arquivos de outras operadoras ou formatos customizados.
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary">
+                                    <i class="fas fa-file-upload me-2"></i>Upload de Arquivo
+                                </h6>
+                                <form id="formUploadGenerico" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label for="arquivoGenerico" class="form-label">Selecionar Arquivo</label>
+                                        <input class="form-control" type="file" id="arquivoGenerico" 
+                                               accept=".csv,.xlsx,.xls,.pdf" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="operadoraGenerica" class="form-label">Operadora</label>
+                                        <select class="form-select" id="operadoraGenerica" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="ODONTOPREV">Odontoprev</option>
+                                            <option value="HAPVIDA">Hapvida</option>
+                                            <option value="UNIMED">Unimed</option>
+                                            <option value="SULAMERICA">Sulamérica</option>
+                                            <option value="OUTRA">Outra</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="empresaGenerica" class="form-label">Empresa</label>
+                                        <select class="form-select" id="empresaGenerica" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="PSF">PASCHOALOTTO</option>
+                                            <option value="001">Empresa 001</option>
+                                            <option value="002">Empresa 002</option>
+                                            <option value="OUTRA">Outra</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <button type="button" class="btn btn-outline-primary w-100" 
+                                            onclick="validarArquivo()">
+                                        <i class="fas fa-check me-2"></i>Validar Arquivo
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title text-success">
+                                    <i class="fas fa-chart-bar me-2"></i>Pré-visualização
+                                </h6>
+                                <div id="previewContainer" class="text-center py-4">
+                                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">Nenhum arquivo selecionado</p>
+                                    <small>Selecione um arquivo e clique em Validar</small>
+                                </div>
+                                
+                                <div id="resultadoValidacao" class="d-none">
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        <strong>Arquivo válido!</strong>
+                                        <div id="detalhesArquivo"></div>
+                                    </div>
+                                    
+                                    <button type="button" class="btn btn-success w-100" 
+                                            onclick="importarArquivo()">
+                                        <i class="fas fa-upload me-2"></i>Importar Arquivo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Últimas Importações -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history me-2"></i>Últimas Importações
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="tabelaImportacoes">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Operadora</th>
+                                <th>Arquivo</th>
+                                <th>Status</th>
+                                <th>Registros</th>
+                                <th>Taxa Sucesso</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if ultimas_importacoes %}
+                                {% for imp in ultimas_importacoes %}
+                                <tr>
+                                    <td>{{ imp.data_importacao|to_brasilia if imp.data_importacao else '' }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 
+                                            'primary' if imp.tipo_importacao == 'ODONTOPREV' else
+                                            'success' if imp.tipo_importacao == 'HAPVIDA' else
+                                            'info' if imp.tipo_importacao == 'UNIMED' else
+                                            'warning' if imp.tipo_importacao == 'SULAMERICA' else
+                                            'secondary'
+                                        }}">
+                                            {{ imp.tipo_importacao }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>{{ imp.arquivo|truncate(30) }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 
+                                            'success' if imp.status == 'CONCLUIDO' else
+                                            'danger' if imp.status == 'ERRO' else
+                                            'warning'
+                                        }}">
+                                            {{ imp.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            {{ imp.linhas_sucesso }}/{{ imp.linhas_processadas }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-{{ 
+                                                'success' if imp.taxa_sucesso >= 90 else
+                                                'warning' if imp.taxa_sucesso >= 50 else
+                                                'danger'
+                                            }}" style="width: {{ imp.taxa_sucesso }}%"></div>
+                                        </div>
+                                        <small>{{ "%.1f"|format(imp.taxa_sucesso) }}%</small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                onclick="verDetalhes({{ imp.id }})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-3">
+                                        <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted mb-0">Nenhuma importação realizada</p>
+                                        <small>Realize a primeira importação acima</small>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalhes -->
+<div class="modal fade" id="modalDetalhes" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes da Importação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="conteudoDetalhes">
+                    <!-- Conteúdo será carregado via AJAX -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bg-odontoprev {
+        background: linear-gradient(135deg, #00a859 0%, #008a4c 100%);
+    }
+    
+    .bg-hapvida {
+        background: linear-gradient(135deg, #00a6eb 0%, #0088c6 100%);
+    }
+    
+    .bg-unimed {
+        background: linear-gradient(135deg, #0054a6 0%, #00438a 100%);
+    }
+    
+    .bg-sulamerica {
+        background: linear-gradient(135deg, #ff6b00 0%, #e65c00 100%);
+    }
+    
+    .progress {
+        width: 100px;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .card {
+        transition: transform 0.2s;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function validarArquivo() {
+        const arquivoInput = document.getElementById('arquivoGenerico');
+        const operadoraSelect = document.getElementById('operadoraGenerica');
+        const empresaSelect = document.getElementById('empresaGenerica');
+        
+        if (!arquivoInput.files.length) {
+            alert('Por favor, selecione um arquivo.');
+            return;
+        }
+        
+        if (!operadoraSelect.value) {
+            alert('Por favor, selecione a operadora.');
+            return;
+        }
+        
+        if (!empresaSelect.value) {
+            alert('Por favor, selecione a empresa.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('file', arquivoInput.files[0]);
+        formData.append('operadora', operadoraSelect.value);
+        
+        // Mostrar loading
+        const previewContainer = document.getElementById('previewContainer');
+        previewContainer.innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <p class="text-muted mb-0">Validando arquivo...</p>
+            </div>
+        `;
+        
+        // Enviar para validação
+        fetch('{{ url_for("importacao.api_validar") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar detalhes do arquivo
+                document.getElementById('resultadoValidacao').classList.remove('d-none');
+                document.getElementById('detalhesArquivo').innerHTML = `
+                    <div class="mt-2">
+                        <strong>Linhas:</strong> ${data.linhas}<br>
+                        <strong>Colunas:</strong> ${data.colunas.join(', ')}<br>
+                        <small class="text-muted">Arquivo pronto para importação</small>
+                    </div>
+                `;
+                
+                // Armazenar dados para importação
+                window.arquivoParaImportar = {
+                    file: arquivoInput.files[0],
+                    operadora: operadoraSelect.value,
+                    empresa: empresaSelect.value,
+                    dados: data
+                };
+            } else {
+                alert('Erro na validação: ' + data.error);
+                previewContainer.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <p class="text-danger mb-0">Arquivo inválido</p>
+                        <small>${data.error}</small>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao validar arquivo. Tente novamente.');
+        });
+    }
+    
+    function importarArquivo() {
+        if (!window.arquivoParaImportar) {
+            alert('Nenhum arquivo válido para importar.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('file', window.arquivoParaImportar.file);
+        formData.append('operadora', window.arquivoParaImportar.operadora);
+        formData.append('empresa', window.arquivoParaImportar.empresa);
+        
+        // Mostrar loading
+        const btnImportar = document.querySelector('#resultadoValidacao button');
+        const originalText = btnImportar.innerHTML;
+        btnImportar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Importando...';
+        btnImportar.disabled = true;
+        
+        // Enviar para importação
+        fetch('{{ url_for("importacao.api_upload") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✅ ' + data.message);
+                // Recarregar página para mostrar nova importação
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                alert('❌ ' + data.message);
+                if (data.errors && data.errors.length) {
+                    console.error('Erros:', data.errors);
+                }
+                btnImportar.innerHTML = originalText;
+                btnImportar.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao importar arquivo. Tente novamente.');
+            btnImportar.innerHTML = originalText;
+            btnImportar.disabled = false;
+        });
+    }
+    
+    function verDetalhes(importacaoId) {
+        // Carregar detalhes via AJAX
+        fetch(`/importar/api/detalhes/${importacaoId}`)
+            .then(response => response.json())
+            .then(data => {
+                const modal = new bootstrap.Modal(document.getElementById('modalDetalhes'));
+                const conteudo = document.getElementById('conteudoDetalhes');
+                
+                if (data.erro) {
+                    conteudo.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            ${data.erro}
+                        </div>
+                    `;
+                } else {
+                    conteudo.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">Operadora</label>
+                                    <p class="form-control-plaintext">${data.tipo_importacao}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">Arquivo</label>
+                                    <p class="form-control-plaintext">${data.arquivo}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">Data/Hora</label>
+                                    <p class="form-control-plaintext">${data.data_importacao}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">Status</label>
+                                    <p class="form-control-plaintext">
+                                        <span class="badge bg-${data.status === 'CONCLUIDO' ? 'success' : data.status === 'ERRO' ? 'danger' : 'warning'}">
+                                            ${data.status}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${data.linhas_processadas}</h5>
+                                        <p class="card-text text-muted">Processadas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center bg-success text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${data.linhas_sucesso}</h5>
+                                        <p class="card-text">Sucesso</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center bg-danger text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${data.linhas_erro}</h5>
+                                        <p class="card-text">Erros</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${data.taxa_sucesso}%</h5>
+                                        <p class="card-text text-muted">Taxa Sucesso</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${data.detalhes ? `
+                            <div class="mt-3">
+                                <label class="form-label text-muted">Detalhes</label>
+                                <div class="alert alert-${data.status === 'ERRO' ? 'danger' : 'info'}">
+                                    ${data.detalhes}
+                                </div>
+                            </div>
+                        ` : ''}
+                    `;
+                }
+                
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao carregar detalhes.');
+            });
+    }
+    
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-refresh da tabela a cada 30 segundos
+        setInterval(() => {
+            // Atualizar apenas se a página estiver visível
+            if (!document.hidden) {
+                fetch('{{ url_for("importacao.historico") }}?partial=1')
+                    .then(response => response.text())
+                    .then(html => {
+                        // Atualizar apenas a tabela
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const novaTabela = doc.querySelector('#tabelaImportacoes tbody');
+                        if (novaTabela) {
+                            document.querySelector('#tabelaImportacoes tbody').innerHTML = novaTabela.innerHTML;
+                        }
+                    })
+                    .catch(error => console.error('Erro ao atualizar:', error));
+            }
+        }, 30000);
+        
+        // Drag and drop para upload
+        const dropZone = document.querySelector('.card-body');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-primary');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-primary');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary');
+            
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                document.getElementById('arquivoGenerico').files = files;
+                validarArquivo();
+            }
+        });
+    });
+</script>
+{% endblock %}

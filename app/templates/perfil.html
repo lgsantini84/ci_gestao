@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil - Sistema CI{% endblock %}
+
+{% block page_title %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <i class="fas fa-user me-2"></i>Meu Perfil
+    </div>
+    <div>
+        <a href="{{ url_for('auth.alterar_senha') }}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-key me-1"></i>Alterar Senha
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Informações do Usuário</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-3 text-center">
+                        <div class="avatar-circle mb-3">
+                            <i class="fas fa-user fa-3x text-primary"></i>
+                        </div>
+                        <span class="badge bg-{{ 'success' if usuario.ativo else 'danger' }}">
+                            {{ 'Ativo' if usuario.ativo else 'Inativo' }}
+                        </span>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Nome de Usuário</label>
+                                <p class="form-control-plaintext">{{ usuario.username }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Tipo de Usuário</label>
+                                <p class="form-control-plaintext">
+                                    <span class="badge bg-{{ 'danger' if usuario.tipo_usuario == 'admin' else 'primary' }}">
+                                        {{ 'Administrador' if usuario.tipo_usuario == 'admin' else 'Usuário' }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label text-muted">Nome Completo</label>
+                                <p class="form-control-plaintext">{{ usuario.nome }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Email</label>
+                                <p class="form-control-plaintext">{{ usuario.email }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Data de Criação</label>
+                                <p class="form-control-plaintext">{{ usuario.created_at.strftime('%d/%m/%Y %H:%M') if usuario.created_at else 'N/A' }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Último Login</label>
+                                <p class="form-control-plaintext">
+                                    {{ usuario.last_login.strftime('%d/%m/%Y %H:%M') if usuario.last_login else 'Nunca' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Voltar ao Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Atividade Recente</h5>
+            </div>
+            <div class="card-body">
+                {% if atividades %}
+                    <div class="list-group">
+                        {% for atividade in atividades %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ atividade.descricao }}</h6>
+                                <small>{{ atividade.data.strftime('%d/%m/%Y %H:%M') }}</small>
+                            </div>
+                            <small class="text-muted">{{ atividade.detalhes }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted py-3">Nenhuma atividade registrada.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

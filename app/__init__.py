@@ -4,6 +4,7 @@ Factory da aplicação Flask.
 
 from flask import Flask, render_template  # ADICIONE render_template AQUI
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 from flask_migrate import Migrate
 import logging
 from logging.handlers import RotatingFileHandler
@@ -11,6 +12,7 @@ import os
 
 # Extensões
 db = SQLAlchemy()
+login_manager = LoginManager()
 migrate = Migrate()
 
 def create_app(config_name='development'):
@@ -31,6 +33,17 @@ def create_app(config_name='development'):
     
     # Inicializar extensões
     db.init_app(app)
+    
+    # Configurar Flask-Login
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Por favor, faça login para acessar esta página.'
+    login_manager.login_message_category = 'info'
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        from app.models import Usuario
+        return Usuario.query.get(int(user_id))
     migrate.init_app(app, db)
     
     # Configurar logging
@@ -75,6 +88,7 @@ def setup_logging(app):
 
 def register_blueprints(app):
     """Registrar todos os blueprints."""
+    from app.routes.main import main_bp
     from app.routes.auth import auth_bp
     from app.routes.ci import ci_bp
     from app.routes.import_routes import import_bp
@@ -82,6 +96,7 @@ def register_blueprints(app):
     from app.routes.reports import reports_bp
     from app.routes.api import api_bp
     
+    app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(ci_bp)
     app.register_blueprint(import_bp)

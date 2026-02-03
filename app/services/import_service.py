@@ -156,3 +156,13 @@ class ImportService:
             'linhas_erro': 0,
             'mensagem': f'Processados {len(df)} colaboradores desligados'
         }
+
+# ============================================================================
+# INSTÂNCIA SINGLETON
+# ============================================================================
+
+# Criar instância única do serviço para uso global
+import_service = ImportService()
+
+# Exportar classes e instâncias
+__all__ = ['ImportService', 'import_service']

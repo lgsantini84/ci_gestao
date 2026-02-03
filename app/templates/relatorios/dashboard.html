@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sistema CI{% endblock %}
+
+{% block page_title %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <i class="fas fa-chart-line me-2"></i>Dashboard de Relatórios
+    </div>
+    <div>
+        <button class="btn btn-outline-secondary btn-sm" onclick="atualizarDashboard()">
+            <i class="fas fa-sync-alt me-1"></i>Atualizar
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- KPIs Principais -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Colaboradores Ativos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ dados.colaboradores.ativos }}</div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-success mr-2">
+                                <i class="fas fa-arrow-up"></i> {{ dados.colaboradores.percentual_ativos }}%
+                            </span>
+                            <span class="text-nowrap">Taxa de Ativos</span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Valor Mensal Total
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            R$ {{ "%.2f"|format(dados.valores.total_geral) }}
+                        </div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-nowrap">
+                                Saúde: R$ {{ "%.2f"|format(dados.valores.total_saude) }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Planos Ativos
+                        </div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                                    {{ dados.planos.total_ativos }}
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+                                    {% set percent_saude = (dados.planos.saude_ativos / dados.planos.total_ativos * 100) if dados.planos.total_ativos > 0 else 0 %}
+                                    <div class="progress-bar bg-info" role="progressbar" 
+                                         style="width: {{ percent_saude }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-nowrap">{{ dados.planos.saude_ativos }} Saúde / {{ dados.planos.odonto_ativos }} Odonto</span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-heartbeat fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Dependentes
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ dados.dependentes.total }}</div>
+                        <div class="mt-2 mb-0 text-muted text-xs">
+                            <span class="text-nowrap">
+                                Média: {{ "%.2f"|format(dados.dependentes.media_por_colaborador) }} por CI
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Coparticipação do Mês -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-stethoscope me-2"></i>Coparticipação - Mês {{ dados.valores.competencia_atual }}
+                </h6>
+                <a href="{{ url_for('relatorio.coparticipacao') }}?competencia={{ dados.valores.competencia_atual }}" 
+                   class="btn btn-sm btn-outline-primary">
+                    Ver Detalhes
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h2 class="display-4 font-weight-bold text-primary">
+                        R$ {{ "%.2f"|format(dados.valores.coparticipacao_mes_atual) }}
+                    </h2>
+                    <p class="text-muted">Total de coparticipação deste mês</p>
+                </div>
+                <div class="text-center">
+                    <a href="{{ url_for('relatorio.coparticipacao') }}" class="btn btn-primary">
+                        <i class="fas fa-chart-bar me-2"></i>Ver Relatório Completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribuição por Operadora -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-hospital me-2"></i>Distribuição por Operadora
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-center mb-3">Planos de Saúde</h6>
+                        {% if dados.planos.por_operadora %}
+                        <div class="list-group">
+                            {% for operadora, total in dados.planos.por_operadora.items() %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ operadora }}
+                                <span class="badge badge-primary badge-pill">{{ total }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-center text-muted">Nenhum plano registrado</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-center mb-3">Planos Odontológicos</h6>
+                        {% if dados.planos.por_operadora_odonto %}
+                        <div class="list-group">
+                            {% for operadora, total in dados.planos.por_operadora_odonto.items() %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ operadora }}
+                                <span class="badge badge-success badge-pill">{{ total }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-center text-muted">Nenhum plano registrado</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Acesso Rápido a Relatórios -->
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-file-alt me-2"></i>Acesso Rápido a Relatórios
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-left-primary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                                <h5 class="card-title">Colaboradores</h5>
+                                <p class="card-text text-muted">Relatório completo de colaboradores internos</p>
+                                <a href="{{ url_for('relatorio.colaboradores') }}" class="btn btn-primary btn-block">
+                                    Gerar Relatório
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-left-success">
+                            <div class="card-body text-center">
+                                <i class="fas fa-heartbeat fa-2x text-success mb-3"></i>
+                                <h5 class="card-title">Planos de Saúde</h5>
+                                <p class="card-text text-muted">Listagem de planos de saúde ativos</p>
+                                <a href="{{ url_for('relatorio.planos_saude') }}" class="btn btn-success btn-block">
+                                    Gerar Relatório
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-left-info">
+                            <div class="card-body text-center">
+                                <i class="fas fa-tooth fa-2x text-info mb-3"></i>
+                                <h5 class="card-title">Planos Odontológicos</h5>
+                                <p class="card-text text-muted">Listagem de planos odontológicos</p>
+                                <a href="{{ url_for('relatorio.planos_odonto') }}" class="btn btn-info btn-block">
+                                    Gerar Relatório
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-left-warning">
+                            <div class="card-body text-center">
+                                <i class="fas fa-stethoscope fa-2x text-warning mb-3"></i>
+                                <h5 class="card-title">Coparticipação</h5>
+                                <p class="card-text text-muted">Relatório de atendimentos com coparticipação</p>
+                                <a href="{{ url_for('relatorio.coparticipacao') }}" class="btn btn-warning btn-block">
+                                    Gerar Relatório
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-left-secondary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-user-plus fa-2x text-secondary mb-3"></i>
+                                <h5 class="card-title">Dependentes</h5>
+                                <p class="card-text text-muted">Relatório de dependentes cadastrados</p>
+                                <a href="{{ url_for('relatorio.dependentes') }}" class="btn btn-secondary btn-block">
+                                    Gerar Relatório
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-left-danger">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-export fa-2x text-danger mb-3"></i>
+                                <h5 class="card-title">Exportações</h5>
+                                <p class="card-text text-muted">Exportar dados em Excel/CSV</p>
+                                <div class="dropdown">
+                                    <button class="btn btn-danger btn-block dropdown-toggle" type="button" 
+                                            data-bs-toggle="dropdown">
+                                        Exportar Dados
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{{ url_for('relatorio.colaboradores') }}?formato=excel">
+                                            <i class="fas fa-file-excel text-success me-2"></i>Colaboradores (Excel)
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('relatorio.planos_saude') }}?formato=excel">
+                                            <i class="fas fa-file-excel text-success me-2"></i>Planos Saúde (Excel)
+                                        </a>
+                                        <a class="dropdown-item" href="{{ url_for('relatorio.planos_odonto') }}?formato=excel">
+                                            <i class="fas fa-file-excel text-success me-2"></i>Planos Odonto (Excel)
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estatísticas Detalhadas -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-bar me-2"></i>Estatísticas Detalhadas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary">
+                                    <i class="fas fa-users me-2"></i>Distribuição de Colaboradores
+                                </h6>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Ativos</span>
+                                        <span class="font-weight-bold">{{ dados.colaboradores.ativos }}</span>
+                                    </div>
+                                    <div class="progress mb-3">
+                                        {% set percent_ativos = (dados.colaboradores.ativos / dados.colaboradores.total * 100) if dados.colaboradores.total > 0 else 0 %}
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ percent_ativos }}%"></div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Inativos</span>
+                                        <span class="font-weight-bold">{{ dados.colaboradores.inativos }}</span>
+                                    </div>
+                                    <div class="progress mb-3">
+                                        {% set percent_inativos = (dados.colaboradores.inativos / dados.colaboradores.total * 100) if dados.colaboradores.total > 0 else 0 %}
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ percent_inativos }}%"></div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Excluídos</span>
+                                        <span class="font-weight-bold">{{ dados.colaboradores.excluidos }}</span>
+                                    </div>
+                                    <div class="progress">
+                                        {% set percent_excluidos = (dados.colaboradores.excluidos / dados.colaboradores.total * 100) if dados.colaboradores.total > 0 else 0 %}
+                                        <div class="progress-bar bg-danger" role="progressbar" 
+                                             style="width: {{ percent_excluidos }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary">
+                                    <i class="fas fa-chart-pie me-2"></i>Resumo Financeiro
+                                </h6>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Planos de Saúde</span>
+                                        <span class="font-weight-bold">R$ {{ "%.2f"|format(dados.valores.total_saude) }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Planos Odontológicos</span>
+                                        <span class="font-weight-bold">R$ {{ "%.2f"|format(dados.valores.total_odonto) }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Coparticipação ({{ dados.valores.competencia_atual }})</span>
+                                        <span class="font-weight-bold">R$ {{ "%.2f"|format(dados.valores.coparticipacao_mes_atual) }}</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="font-weight-bold">Total Geral</span>
+                                        <span class="font-weight-bold text-primary">R$ {{ "%.2f"|format(dados.valores.total_geral) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Informações do Sistema -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="card-title text-primary">
+                            <i class="fas fa-info-circle me-2"></i>Informações do Sistema
+                        </h6>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Última Atualização:</span>
+                                    <span class="font-weight-bold" id="ultimaAtualizacao">{{ agora|default('Carregando...') }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Total de Registros:</span>
+                                    <span class="font-weight-bold">{{ dados.colaboradores.total + dados.dependentes.total }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Versão do Sistema:</span>
+                                    <span class="font-weight-bold">2.0.0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Status:</span>
+                                    <span class="font-weight-bold text-success">
+                                        <i class="fas fa-check-circle me-1"></i>Operacional
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dicas e Sugestões -->
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-lightbulb me-2"></i>Dicas e Sugestões
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Dica:</strong> Use os filtros avançados nos relatórios para análises específicas.
+                </div>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-chart-line me-2"></i>
+                    <strong>Sugestão:</strong> Exporte os relatórios em Excel para análises offline.
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Atenção:</strong> Verifique regularmente os relatórios de inconsistências.
+                </div>
+                
+                <div class="alert alert-primary">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    <strong>Lembrete:</strong> A coparticipação é atualizada mensalmente.
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('importacao.historico') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-history me-2"></i>Ver Histórico de Importações
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function atualizarDashboard() {
+        const btn = document.querySelector('button[onclick="atualizarDashboard()"]');
+        const originalText = btn.innerHTML;
+        
+        // Mostrar loading
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Atualizando...';
+        btn.disabled = true;
+        
+        // Fazer requisição AJAX para atualizar
+        fetch('{{ url_for("relatorio.api_dashboard") }}')
+            .then(response => response.json())
+            .then(data => {
+                // Aqui você atualizaria os dados na página
+                // Por simplicidade, vamos apenas recarregar
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar:', error);
+                alert('Erro ao atualizar dados. Tente novamente.');
+            })
+            .finally(() => {
+                // Restaurar botão
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+    }
+    
+    // Atualizar data/hora da última atualização
+    function atualizarDataHora() {
+        const agora = new Date();
+        const formatado = agora.toLocaleString('pt-BR');
+        document.getElementById('ultimaAtualizacao').textContent = formatado;
+    }
+    
+    // Atualizar a cada minuto
+    setInterval(atualizarDataHora, 60000);
+    
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', function() {
+        atualizarDataHora();
+        
+        // Adicionar tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

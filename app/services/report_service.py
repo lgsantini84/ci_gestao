@@ -188,3 +188,13 @@ class ReportService:
         ]
         
         return dados
+
+# ============================================================================
+# INSTÂNCIA SINGLETON
+# ============================================================================
+
+# Criar instância única do serviço para uso global
+report_service = ReportService()
+
+# Exportar classes e instâncias
+__all__ = ['ReportService', 'report_service']

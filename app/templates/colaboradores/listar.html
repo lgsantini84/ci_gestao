@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Colaboradores - Sistema CI{% endblock %}
+
+{% block page_title %}Colaboradores Internos{% endblock %}
+
+{% block page_actions %}
+<div class="d-flex">
+    <a href="{{ url_for('colaborador.novo') }}" class="btn btn-primary">
+        <i class="fas fa-user-plus me-2"></i>Novo Colaborador
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Filtros -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-filter me-2"></i>Filtrar Colaboradores
+            </div>
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="nome" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="nome" name="nome" 
+                               value="{{ filtros.nome }}" placeholder="Buscar por nome...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="cpf" class="form-label">CPF</label>
+                        <input type="text" class="form-control" id="cpf" name="cpf" 
+                               value="{{ filtros.cpf }}" placeholder="000.000.000-00">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="empresa" class="form-label">Empresa</label>
+                        <select class="form-select" id="empresa" name="empresa">
+                            <option value="">Todas</option>
+                            <option value="PSF" {% if filtros.empresa == 'PSF' %}selected{% endif %}>PASCHOALOTTO</option>
+                            <option value="001" {% if filtros.empresa == '001' %}selected{% endif %}>Empresa 001</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="ativo" {% if filtros.status == 'ativo' %}selected{% endif %}>Ativos</option>
+                            <option value="inativo" {% if filtros.status == 'inativo' %}selected{% endif %}>Inativos</option>
+                            <option value="todos" {% if filtros.status == 'todos' %}selected{% endif %}>Todos</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Filtrar
+                            </button>
+                            <a href="{{ url_for('colaborador.listar') }}" class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-times me-2"></i>Limpar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Estatísticas -->
+    <div class="col-12 mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">{{ stats.total }}</h5>
+                        <p class="card-text">Total de Colaboradores</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-success">{{ stats.ativos }}</h5>
+                        <p class="card-text">Ativos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-warning">{{ stats.inativos }}</h5>
+                        <p class="card-text">Inativos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-info">{{ stats.percentual_ativos }}%</h5>
+                        <p class="card-text">Percentual Ativos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lista de Colaboradores -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="fas fa-users me-2"></i>
+                    Lista de Colaboradores ({{ colaboradores|length }})
+                </span>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-file-export me-1"></i>Exportar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if colaboradores %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Empresa/NC</th>
+                                <th>Status</th>
+                                <th>Dependentes</th>
+                                <th>Planos</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ci in colaboradores %}
+                            <tr>
+                                <td>{{ ci.id }}</td>
+                                <td>
+                                    <strong>{{ ci.nome }}</strong>
+                                    {% if ci.is_deleted %}
+                                    <span class="badge bg-danger ms-2">Excluído</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ ci.cpf[:3] }}.{{ ci.cpf[3:6] }}.{{ ci.cpf[6:9] }}-{{ ci.cpf[9:] }}</td>
+                                <td>
+                                    {% set nc = ci.get_nc_ativo() %}
+                                    {% if nc %}
+                                    <span class="badge bg-secondary">{{ nc.cod_empresa }}</span>
+                                    <small class="text-muted">{{ nc.nc }}</small>
+                                    {% else %}
+                                    <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ci.is_deleted %}
+                                    <span class="badge bg-danger">Excluído</span>
+                                    {% elif ci.esta_ativo() %}
+                                    <span class="badge bg-success">Ativo</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ ci.dependentes|length }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ ci.planos_saude|length }}</span>
+                                    <span class="badge bg-secondary">{{ ci.planos_odonto|length }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('colaborador.detalhes', ci_id=ci.id) }}" 
+                                           class="btn btn-outline-primary" title="Ver detalhes">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('colaborador.editar', ci_id=ci.id) }}" 
+                                           class="btn btn-outline-secondary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% if current_user.is_admin() and not ci.is_deleted %}
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                title="Excluir" data-bs-toggle="modal" 
+                                                data-bs-target="#modalExcluir{{ ci.id }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Modal de Confirmação de Exclusão -->
+                                    {% if current_user.is_admin() and not ci.is_deleted %}
+                                    <div class="modal fade" id="modalExcluir{{ ci.id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Tem certeza que deseja excluir o colaborador <strong>{{ ci.nome }}</strong>?</p>
+                                                    <p class="text-danger"><small>Esta ação não pode ser desfeita.</small></p>
+                                                    <form id="formExcluir{{ ci.id }}" 
+                                                          action="{{ url_for('colaborador.excluir', ci_id=ci.id) }}" 
+                                                          method="POST">
+                                                        <div class="mb-3">
+                                                            <label for="motivo{{ ci.id }}" class="form-label">Motivo da exclusão:</label>
+                                                            <input type="text" class="form-control" 
+                                                                   id="motivo{{ ci.id }}" name="motivo" required>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" form="formExcluir{{ ci.id }}" 
+                                                            class="btn btn-danger">Confirmar Exclusão</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhum colaborador encontrado</h5>
+                    <p class="text-muted">Tente ajustar os filtros ou cadastre um novo colaborador.</p>
+                    <a href="{{ url_for('colaborador.novo') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Cadastrar Novo Colaborador
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Formatação automática do CPF
+    $('#cpf').on('input', function() {
+        let value = $(this).val().replace(/\D/g, '');
+        if (value.length > 11) value = value.substring(0, 11);
+        
+        if (value.length <= 11) {
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+        
+        $(this).val(value);
+    });
+    
+    // Confirmação antes de excluir
+    $('form[id^="formExcluir"]').on('submit', function(e) {
+        const motivo = $(this).find('input[name="motivo"]').val();
+        if (!motivo || motivo.trim().length < 5) {
+            e.preventDefault();
+            alert('Por favor, informe um motivo válido para a exclusão (mínimo 5 caracteres).');
+        }
+    });
+</script>
+{% endblock %}

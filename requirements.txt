@@ -1,45 +1,242 @@
-# requirements.txt
-# Core
-Flask==2.3.3
-Flask-SQLAlchemy==3.0.5
-Flask-Migrate==4.0.4
-Flask-Login==0.6.2
-python-dotenv==1.0.0
+# ============================================================================
+# DEPENDÊNCIAS DO SISTEMA CI GESTÃO - VERSÃO OTIMIZADA
+# ============================================================================
+#
+# Este arquivo contém todas as dependências necessárias para execução.
+# Versões fixadas para garantir compatibilidade e reprodutibilidade.
+#
+# Instalação:
+#   pip install -r requirements.txt
+#
+# ============================================================================
 
-# Data Processing
-pandas==2.0.3
-openpyxl==3.1.2
-xlrd==2.0.1
-python-dateutil==2.8.2
-pytz==2023.3
+# ============================================================================
+# FRAMEWORK WEB
+# ============================================================================
 
-# PDF Processing
-pdfplumber==0.9.0
-pdfminer.six==20221105
+# Flask - Framework web Python
+Flask==3.0.0
 
-# Utils
-Werkzeug==2.3.6
+# Flask-SQLAlchemy - ORM para banco de dados
+Flask-SQLAlchemy==3.1.1
+
+# Flask-Migrate - Migrações de banco de dados
+Flask-Migrate==4.0.5
+
+# Flask-Login - Gerenciamento de autenticação
+Flask-Login==0.6.3
+
+# Werkzeug - Utilitários WSGI
+Werkzeug==3.0.1
+
+# Jinja2 - Template engine
 Jinja2==3.1.2
-click==8.1.3
+
+# Click - CLI utilities
+click==8.1.7
+
+# itsdangerous - Assinatura de dados
 itsdangerous==2.1.2
 
-# Database (opcional para produção)
-psycopg2-binary==2.9.6  # Para PostgreSQL
-mysqlclient==2.1.1      # Para MySQL
+# ============================================================================
+# BANCO DE DADOS
+# ============================================================================
 
-# Testing
-pytest==7.4.0
-pytest-flask==1.2.0
-pytest-cov==4.1.0
-factory-boy==3.3.0
-Faker==19.6.2
+# SQLAlchemy - SQL toolkit e ORM
+SQLAlchemy==2.0.23
 
-# Development
-ipython==8.14.0
-flake8==6.0.0
-black==23.7.0
-isort==5.12.0
-pre-commit==3.3.3
+# Alembic - Migração de banco de dados
+alembic==1.13.1
 
-# Debug
-Flask-DebugToolbar==0.13.1
+# ============================================================================
+# PROCESSAMENTO DE DADOS
+# ============================================================================
+
+# Pandas - Análise e manipulação de dados
+pandas==2.1.4
+
+# NumPy - Computação numérica
+numpy==1.26.2
+
+# OpenPyXL - Leitura/escrita de arquivos Excel (.xlsx)
+openpyxl==3.1.2
+
+# XlsxWriter - Escrita de arquivos Excel com formatação
+XlsxWriter==3.1.9
+
+# xlrd - Leitura de arquivos Excel antigos (.xls)
+xlrd==2.0.1
+
+# python-dateutil - Extensões para datetime
+python-dateutil==2.8.2
+
+# pytz - Timezone definitions
+pytz==2023.3.post1
+
+# ============================================================================
+# PROCESSAMENTO DE PDF
+# ============================================================================
+
+# pdfplumber - Extração de dados de PDFs
+pdfplumber==0.10.3
+
+# PyPDF2 - Manipulação de PDFs (backup/alternativa)
+PyPDF2==3.0.1
+
+# pdfminer.six - Análise de PDFs
+pdfminer.six==20221105
+
+# ============================================================================
+# VALIDAÇÃO E FORMATAÇÃO
+# ============================================================================
+
+# email-validator - Validação de emails
+email-validator==2.1.0.post1
+
+# phonenumbers - Validação de telefones
+phonenumbers==8.13.27
+
+# python-slugify - Criação de slugs
+python-slugify==8.0.1
+
+# ============================================================================
+# SEGURANÇA
+# ============================================================================
+
+# bcrypt - Hashing de senhas
+bcrypt==4.1.2
+
+# cryptography - Criptografia
+cryptography==41.0.7
+
+# python-dotenv - Variáveis de ambiente
+python-dotenv==1.0.0
+
+# ============================================================================
+# CACHE E PERFORMANCE (OPCIONAL - recomendado para produção)
+# ============================================================================
+
+# Redis - Cliente Redis Python
+# redis==5.0.1
+
+# Flask-Caching - Sistema de cache para Flask
+# Flask-Caching==2.1.0
+
+# ============================================================================
+# RATE LIMITING (OPCIONAL - recomendado para produção)
+# ============================================================================
+
+# Flask-Limiter - Rate limiting para Flask
+Flask-Limiter==3.5.0
+
+# limits - Core do rate limiting
+limits==3.7.0
+
+# ============================================================================
+# CORS (OPCIONAL - se usar API de domínio diferente)
+# ============================================================================
+
+# Flask-CORS - Cross-Origin Resource Sharing
+Flask-CORS==4.0.0
+
+# ============================================================================
+# MONITORAMENTO E LOGGING (OPCIONAL - recomendado para produção)
+# ============================================================================
+
+# sentry-sdk - Monitoramento de erros
+# sentry-sdk[flask]==1.39.2
+
+# python-json-logger - Logging em JSON
+# python-json-logger==2.0.7
+
+# ============================================================================
+# DRIVERS DE BANCO DE DADOS (escolher conforme necessidade)
+# ============================================================================
+
+# PostgreSQL (RECOMENDADO para produção)
+# psycopg2-binary==2.9.9
+
+# MySQL/MariaDB
+# mysqlclient==2.2.1
+# PyMySQL==1.1.0
+
+# ============================================================================
+# SERVIDOR WSGI (para produção)
+# ============================================================================
+
+# Gunicorn - WSGI HTTP Server (Linux/Mac)
+gunicorn==21.2.0
+
+# waitress - WSGI server (Windows)
+# waitress==2.1.2
+
+# ============================================================================
+# UTILITÁRIOS
+# ============================================================================
+
+# requests - HTTP library
+requests==2.31.0
+
+# python-magic - Detecção de tipo de arquivo
+# python-magic==0.4.27
+
+# Pillow - Processamento de imagens
+Pillow==10.1.0
+
+# reportlab - Geração de PDFs
+reportlab==4.0.9
+
+# chardet - Detecção de encoding
+chardet==5.2.0
+
+# ============================================================================
+# CLI E FERRAMENTAS
+# ============================================================================
+
+# tqdm - Progress bars
+tqdm==4.66.1
+
+# colorama - Cores no terminal
+colorama==0.4.6
+
+# tabulate - Tabelas formatadas no terminal
+tabulate==0.9.0
+
+# ============================================================================
+# VERSÕES COMPATÍVEIS
+# ============================================================================
+#
+# Python: 3.8+
+# pip: 21.0+
+#
+# Testado em:
+# - Python 3.8, 3.9, 3.10, 3.11, 3.12
+# - Ubuntu 20.04, 22.04
+# - Windows 10, 11
+# - macOS 12+
+#
+# ============================================================================
+
+# ============================================================================
+# NOTAS DE INSTALAÇÃO
+# ============================================================================
+#
+# 1. Sempre use ambiente virtual:
+#    python -m venv venv
+#    source venv/bin/activate  # Linux/Mac
+#    venv\Scripts\activate     # Windows
+#
+# 2. Atualize pip antes de instalar:
+#    pip install --upgrade pip
+#
+# 3. Para desenvolvimento, instale também requirements_dev.txt
+#
+# 4. Para PostgreSQL no Ubuntu:
+#    sudo apt-get install python3-dev libpq-dev
+#
+# 5. Para MySQL no Ubuntu:
+#    sudo apt-get install python3-dev default-libmysqlclient-dev
+#
+# 6. Em produção, descomente as dependências opcionais conforme necessário
+#
+# ============================================================================

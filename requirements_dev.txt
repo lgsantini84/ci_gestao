@@ -1,0 +1,273 @@
+# ============================================================================
+# DEPENDÊNCIAS DE DESENVOLVIMENTO - CI GESTÃO
+# ============================================================================
+#
+# Ferramentas para desenvolvimento, testes e quality assurance.
+#
+# Instalação:
+#   pip install -r requirements.txt
+#   pip install -r requirements_dev.txt
+#
+# ============================================================================
+
+# Incluir dependências de produção
+-r requirements.txt
+
+# ============================================================================
+# TESTES
+# ============================================================================
+
+# pytest - Framework de testes
+pytest==7.4.3
+
+# pytest-cov - Cobertura de código
+pytest-cov==4.1.0
+
+# pytest-flask - Utilities para testar Flask
+pytest-flask==1.3.0
+
+# pytest-mock - Mocking para testes
+pytest-mock==3.12.0
+
+# pytest-xdist - Testes paralelos
+pytest-xdist==3.5.0
+
+# pytest-timeout - Timeout para testes
+pytest-timeout==2.2.0
+
+# coverage - Medição de cobertura
+coverage==7.3.4
+
+# faker - Geração de dados fake para testes
+Faker==22.0.0
+
+# factory-boy - Factories para testes
+factory-boy==3.3.0
+
+# hypothesis - Property-based testing
+hypothesis==6.92.2
+
+# ============================================================================
+# QUALIDADE DE CÓDIGO
+# ============================================================================
+
+# flake8 - Linter Python
+flake8==7.0.0
+
+# flake8-docstrings - Docstring linting
+flake8-docstrings==1.7.0
+
+# flake8-bugbear - Detecção de bugs comuns
+flake8-bugbear==23.12.2
+
+# flake8-comprehensions - Linting de comprehensions
+flake8-comprehensions==3.14.0
+
+# pylint - Análise de código Python
+pylint==3.0.3
+
+# mypy - Type checking
+mypy==1.8.0
+
+# bandit - Security linting
+bandit==1.7.6
+
+# safety - Verificação de vulnerabilidades em dependências
+safety==2.3.5
+
+# ============================================================================
+# FORMATAÇÃO DE CÓDIGO
+# ============================================================================
+
+# black - Formatador de código Python
+black==23.12.1
+
+# isort - Organizador de imports
+isort==5.13.2
+
+# autopep8 - Formatação automática PEP8
+autopep8==2.0.4
+
+# ============================================================================
+# PRE-COMMIT HOOKS
+# ============================================================================
+
+# pre-commit - Framework de git hooks
+pre-commit==3.6.0
+
+# ============================================================================
+# DEBUGGING
+# ============================================================================
+
+# ipython - Interactive Python shell
+ipython==8.19.0
+
+# ipdb - IPython debugger
+ipdb==0.13.13
+
+# Flask-DebugToolbar - Debug toolbar para Flask
+Flask-DebugToolbar==0.14.1
+
+# werkzeug-debugger - Enhanced debugger
+# (já incluído no Werkzeug)
+
+# ============================================================================
+# PROFILING E PERFORMANCE
+# ============================================================================
+
+# py-spy - Sampling profiler
+py-spy==0.3.14
+
+# memory-profiler - Memory profiling
+memory-profiler==0.61.0
+
+# line-profiler - Line-by-line profiling
+line-profiler==4.1.1
+
+# snakeviz - Visualizador de cProfile
+snakeviz==2.2.0
+
+# ============================================================================
+# DOCUMENTAÇÃO
+# ============================================================================
+
+# sphinx - Geração de documentação
+Sphinx==7.2.6
+
+# sphinx-rtd-theme - Read the Docs theme
+sphinx-rtd-theme==2.0.0
+
+# sphinx-autodoc-typehints - Type hints na documentação
+sphinx-autodoc-typehints==1.25.2
+
+# mkdocs - Documentação em Markdown
+mkdocs==1.5.3
+
+# mkdocs-material - Material theme para MkDocs
+mkdocs-material==9.5.3
+
+# ============================================================================
+# ANÁLISE DE DEPENDÊNCIAS
+# ============================================================================
+
+# pipdeptree - Visualizar árvore de dependências
+pipdeptree==2.13.1
+
+# pip-audit - Auditoria de segurança
+pip-audit==2.6.3
+
+# ============================================================================
+# UTILITÁRIOS DE DESENVOLVIMENTO
+# ============================================================================
+
+# watchdog - Monitoramento de arquivos
+watchdog==3.0.0
+
+# python-dotenv-vault - Gerenciamento de secrets
+# python-dotenv-vault==0.6.0
+
+# httpie - Cliente HTTP para testes
+httpie==3.2.2
+
+# jq - Processamento de JSON
+# jq==1.6.0
+
+# ============================================================================
+# BANCO DE DADOS - FERRAMENTAS
+# ============================================================================
+
+# faker-sqlalchemy - Dados fake para SQLAlchemy
+# faker-sqlalchemy==0.1.0
+
+# sqlalchemy-utils - Utilities para SQLAlchemy
+SQLAlchemy-Utils==0.41.1
+
+# ============================================================================
+# NOTEBOOKS (OPCIONAL - para análise de dados)
+# ============================================================================
+
+# jupyter - Jupyter notebooks
+# jupyter==1.0.0
+
+# jupyterlab - JupyterLab
+# jupyterlab==4.0.9
+
+# matplotlib - Plotting
+# matplotlib==3.8.2
+
+# seaborn - Statistical visualization
+# seaborn==0.13.0
+
+# ============================================================================
+# CONFIGURAÇÃO E SETUP
+# ============================================================================
+
+# setuptools - Package development
+setuptools==69.0.3
+
+# wheel - Build package
+wheel==0.42.0
+
+# twine - Upload packages to PyPI
+twine==4.0.2
+
+# ============================================================================
+# SCRIPTS E AUTOMAÇÃO
+# ============================================================================
+
+# invoke - Task execution
+invoke==2.2.0
+
+# fabric - Deployment automation
+# fabric==3.2.2
+
+# ============================================================================
+# MOCK E STUBS
+# ============================================================================
+
+# responses - Mock requests
+responses==0.24.1
+
+# vcrpy - Record HTTP interactions
+vcrpy==5.1.0
+
+# freezegun - Mock datetime
+freezegun==1.4.0
+
+# ============================================================================
+# COMANDOS ÚTEIS
+# ============================================================================
+#
+# Testes:
+#   pytest                                    # Rodar todos os testes
+#   pytest --cov=app                          # Com cobertura
+#   pytest --cov=app --cov-report=html        # Gerar relatório HTML
+#   pytest -v -s                              # Verbose com prints
+#   pytest -n auto                            # Paralelo
+#
+# Qualidade:
+#   flake8 app/                               # Linting
+#   pylint app/                               # Análise estática
+#   mypy app/                                 # Type checking
+#   bandit -r app/                            # Security scan
+#   safety check                              # Vulnerabilidades
+#
+# Formatação:
+#   black app/                                # Formatar código
+#   isort app/                                # Organizar imports
+#   black --check app/                        # Verificar sem alterar
+#
+# Pre-commit:
+#   pre-commit install                        # Instalar hooks
+#   pre-commit run --all-files                # Rodar em todos os arquivos
+#
+# Profiling:
+#   python -m cProfile -o output.prof app.py  # Profile
+#   snakeviz output.prof                      # Visualizar
+#   py-spy record -o profile.svg -- python app.py  # Sample profiling
+#
+# Documentação:
+#   sphinx-build -b html docs/ docs/_build/   # Gerar docs
+#   mkdocs serve                              # Servidor de docs
+#
+# ============================================================================

@@ -1365,3 +1365,13 @@ class CIService:
         
         hoje = date.today()
         return (hoje.year - data_admissao.year) * 12 + (hoje.month - data_admissao.month)
+
+# ============================================================================
+# INSTÂNCIA SINGLETON
+# ============================================================================
+
+# Criar instância única do serviço para uso global
+ci_service = CIService()
+
+# Exportar classes e instâncias
+__all__ = ['CIService', 'ci_service']

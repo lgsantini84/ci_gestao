@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sistema CI{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Estatísticas -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card bg-primary">
+            <i class="fas fa-users"></i>
+            <h3>{{ stats.colaboradores.total }}</h3>
+            <p>Colaboradores</p>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card bg-success">
+            <i class="fas fa-user-check"></i>
+            <h3>{{ stats.colaboradores.ativos }}</h3>
+            <p>Ativos</p>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card bg-warning">
+            <i class="fas fa-user-plus"></i>
+            <h3>{{ stats.dependentes.total }}</h3>
+            <p>Dependentes</p>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card bg-info">
+            <i class="fas fa-heartbeat"></i>
+            <h3>{{ stats.planos.total_ativos }}</h3>
+            <p>Planos Ativos</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <!-- Ações Rápidas -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bolt me-2"></i>Ações Rápidas
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <a href="{{ url_for('colaborador.novo') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-user-plus me-2"></i>Novo Colaborador
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ url_for('importacao.index') }}" class="btn btn-success w-100">
+                            <i class="fas fa-file-import me-2"></i>Importar Dados
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ url_for('relatorio.colaboradores') }}" class="btn btn-info w-100">
+                            <i class="fas fa-chart-bar me-2"></i>Gerar Relatório
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Últimos Colaboradores -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history me-2"></i>Últimos Colaboradores Cadastrados
+            </div>
+            <div class="card-body">
+                {% if ultimos_ci %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Empresa</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ci in ultimos_ci %}
+                            <tr>
+                                <td>{{ ci.nome }}</td>
+                                <td>{{ ci.cpf[:3] }}.***.{{ ci.cpf[9:] }}</td>
+                                <td>{{ ci.get_empresa_atual() or 'N/A' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if ci.esta_ativo() else 'secondary' }}">
+                                        {{ 'Ativo' if ci.esta_ativo() else 'Inativo' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('colaborador.detalhes', ci_id=ci.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Nenhum colaborador cadastrado ainda.</p>
+                    <a href="{{ url_for('colaborador.novo') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Cadastrar Primeiro Colaborador
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <!-- Informações do Sistema -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-2"></i>Informações do Sistema
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Versão do Sistema</span>
+                        <span class="badge bg-primary">2.0.0</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Total de Usuários</span>
+                        <span class="badge bg-info">{{ total_usuarios }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Última Importação</span>
+                        <span class="text-muted">{{ ultima_importacao or 'N/A' }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Banco de Dados</span>
+                        <span class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>Conectado
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Avisos e Alertas -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-exclamation-triangle me-2"></i>Avisos do Sistema
+            </div>
+            <div class="card-body">
+                {% if alertas %}
+                <div class="alert alert-warning mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Existem {{ alertas|length }} aviso(s) que requerem atenção.
+                </div>
+                {% else %}
+                <div class="alert alert-success mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Nenhum aviso crítico no momento.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

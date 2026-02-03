@@ -6,6 +6,7 @@ import re
 import os
 from datetime import datetime, date
 from typing import Optional, Tuple, Dict, Any, Union, List
+from sqlalchemy import text
 import pandas as pd
 from werkzeug.utils import secure_filename
 from flask import current_app
@@ -879,20 +880,32 @@ def determinar_parentesco_por_idade(
 # VALIDAÇÃO DE CONFIGURAÇÃO
 # ============================================================================
 
-def validate_app_config() -> Tuple[bool, List[str]]:
+def validate_app_config(app=None) -> Tuple[bool, List[str]]:
     """
     Valida configuração da aplicação.
+    
+    Args:
+        app: Instância da aplicação Flask (opcional)
     
     Returns:
         Tuple (valido, lista_de_erros)
     """
+    from flask import has_app_context, current_app as _current_app
+    
     errors = []
     
-    if not hasattr(current_app, 'config'):
+    # Usar app passado como parâmetro ou current_app
+    if app is None:
+        if not has_app_context():
+            errors.append("Aplicação não está no contexto")
+            return False, errors
+        app = _current_app
+    
+    if not hasattr(app, 'config'):
         errors.append("Configuração da aplicação não encontrada")
         return False, errors
     
-    config = current_app.config
+    config = app.config
     
     # Verificar configurações obrigatórias
     required_configs = [
@@ -960,7 +973,7 @@ def validate_database_connection() -> Tuple[bool, Optional[str]]:
     try:
         from app import db
         # Tentar executar uma query simples
-        db.session.execute('SELECT 1')
+        db.session.execute(text('SELECT 1'))
         return True, None
     except Exception as e:
         return False, f"Erro na conexão com o banco de dados: {str(e)}"
