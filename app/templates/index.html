@@ -1,196 +1,263 @@
+<!-- templates/index.html -->
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Sistema CI Gestão{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h1 class="display-5 mb-0">
-            <i class="bi bi-speedometer2"></i> Dashboard
-        </h1>
-        <p class="text-muted">Visão geral do sistema</p>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </h1>
+            <p class="text-muted mb-0">Visão geral do sistema</p>
+        </div>
+        <div>
+            <span class="badge bg-primary">
+                <i class="fas fa-calendar-alt me-1"></i>
+                {{ now()|to_brasilia|strftime('%d/%m/%Y') }}
+            </span>
+        </div>
     </div>
-</div>
 
-<!-- Cards de Estatísticas -->
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Total de Colaboradores</h6>
-                        <h2 class="mb-0">{{ estatisticas.total_colaboradores or 0 }}</h2>
-                    </div>
-                    <div>
-                        <i class="bi bi-people" style="font-size: 3rem; opacity: 0.5;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Ativos</h6>
-                        <h2 class="mb-0">{{ estatisticas.total_ativos or 0 }}</h2>
-                    </div>
-                    <div>
-                        <i class="bi bi-check-circle" style="font-size: 3rem; opacity: 0.5;"></i>
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <!-- Total Colaboradores -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                Total Colaboradores
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">
+                                {{ estatisticas.total_colaboradores|default(0) }}
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success me-2">
+                                    <i class="fas fa-check-circle"></i>
+                                    {{ estatisticas.total_ativos|default(0) }} ativos
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card text-white bg-info">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Dependentes</h6>
-                        <h2 class="mb-0">{{ estatisticas.total_dependentes or 0 }}</h2>
-                    </div>
-                    <div>
-                        <i class="bi bi-person-plus" style="font-size: 3rem; opacity: 0.5;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Alertas Abertos</h6>
-                        <h2 class="mb-0">{{ estatisticas.total_alertas_abertos or 0 }}</h2>
-                    </div>
-                    <div>
-                        <i class="bi bi-exclamation-triangle" style="font-size: 3rem; opacity: 0.5;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Cards de Planos -->
-<div class="row g-3 mb-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title text-muted mb-0">Planos de Saúde Ativos</h6>
-                        <h3 class="mb-0">{{ estatisticas.total_planos_saude or 0 }}</h3>
-                    </div>
-                    <div>
-                        <i class="bi bi-heart-pulse text-danger" style="font-size: 2.5rem;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title text-muted mb-0">Planos Odontológicos Ativos</h6>
-                        <h3 class="mb-0">{{ estatisticas.total_planos_odonto or 0 }}</h3>
-                    </div>
-                    <div>
-                        <i class="bi bi-emoji-smile text-info" style="font-size: 2.5rem;"></i>
+        <!-- Total Dependentes -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                Total Dependentes
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">
+                                {{ estatisticas.total_dependentes|default(0) }}
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-info me-2">
+                                    <i class="fas fa-user-friends"></i> Vinculados
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-friends fa-2x text-gray-300"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Distribuição por Empresa -->
-{% if estatisticas.distribuicao_empresa %}
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-building"></i> Distribuição por Empresa
+        <!-- Planos de Saúde -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                                Planos Ativos
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">
+                                {{ estatisticas.total_planos_saude|default(0) }}
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="me-2">
+                                    <i class="fas fa-heartbeat"></i> Saúde
+                                </span>
+                                <span>
+                                    <i class="fas fa-tooth"></i> {{ estatisticas.total_planos_odonto|default(0) }} Odonto
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-heartbeat fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="empresaChart"></canvas>
+        </div>
+
+        <!-- Alertas Abertos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                Alertas Abertos
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">
+                                {{ estatisticas.total_alertas_abertos|default(0) }}
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-warning me-2">
+                                    <i class="fas fa-exclamation-triangle"></i> Atenção necessária
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-bell fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-exclamation-triangle"></i> Alertas Recentes
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Distribuição por Empresa -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-building me-2"></i>Distribuição por Empresa
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if estatisticas.distribuicao_empresa %}
+                    <div class="chart-pie pt-4">
+                        <canvas id="empresaChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        {% for item in estatisticas.distribuicao_empresa %}
+                        <span class="me-3">
+                            <i class="fas fa-circle" style="color: {{ 
+                                ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#6f42c1', '#fd7e14', '#20c997']|random 
+                            }}"></i>
+                            {{ item.empresa }} ({{ item.total }})
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-building fa-3x text-gray-300 mb-3"></i>
+                        <p class="text-muted">Nenhum dado disponível</p>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="card-body">
-                {% if estatisticas.alertas_recentes %}
-                <div class="list-group list-group-flush">
-                    {% for alerta in estatisticas.alertas_recentes %}
-                    <a href="{{ url_for('alerts.listar') }}" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1">
-                                <span class="badge bg-{{ 'danger' if alerta.gravidade == 'CRITICA' else 'warning' if alerta.gravidade == 'ALTA' else 'info' }}">
+        </div>
+
+        <!-- Alertas Recentes -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold text-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Alertas Recentes
+                    </h6>
+                    <a href="{{ url_for('alerts.listar') }}" class="btn btn-sm btn-warning">
+                        Ver Todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if estatisticas.alertas_recentes %}
+                    <div class="list-group list-group-flush">
+                        {% for alerta in estatisticas.alertas_recentes %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-{{ 
+                                        'fire text-danger' if alerta.gravidade == 'CRITICA' 
+                                        else 'exclamation-triangle text-warning' if alerta.gravidade == 'ALTA'
+                                        else 'info-circle text-info' if alerta.gravidade == 'MEDIA'
+                                        else 'flag text-success'
+                                    }} me-2"></i>
+                                    {{ alerta.tipo }}
+                                </h6>
+                                <small class="text-muted">
+                                    {{ alerta.data_alerta|to_brasilia|strftime('%d/%m') }}
+                                </small>
+                            </div>
+                            <p class="mb-1 text-muted small">{{ alerta.descricao[:100] }}...</p>
+                            <small>
+                                <span class="badge bg-{{ alerta.cor_gravidade }}">
                                     {{ alerta.gravidade }}
                                 </span>
-                                {{ alerta.tipo }}
-                            </h6>
-                            <small class="text-muted">{{ alerta.data_alerta.strftime('%d/%m/%Y') }}</small>
+                                {% if alerta.dias_aberto > 0 %}
+                                <span class="text-muted ms-2">
+                                    <i class="fas fa-clock"></i> {{ alerta.dias_aberto }} dia(s)
+                                </span>
+                                {% endif %}
+                            </small>
                         </div>
-                        <p class="mb-1 small">{{ alerta.descricao[:100] }}...</p>
-                    </a>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="text-muted">Nenhum alerta aberto</p>
+                        <p class="small text-muted">Tudo está funcionando normalmente!</p>
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="text-center text-muted py-3">
-                    <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
-                    <p class="mt-2">Nenhum alerta pendente</p>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
-</div>
-{% endif %}
 
-<!-- Ações Rápidas -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-lightning"></i> Ações Rápidas
-            </div>
-            <div class="card-body">
-                <div class="row g-2">
-                    <div class="col-md-3">
-                        <a href="{{ url_for('ci.novo') }}" class="btn btn-primary w-100">
-                            <i class="bi bi-person-plus"></i> Novo Colaborador
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="{{ url_for('import.importar') }}" class="btn btn-success w-100">
-                            <i class="bi bi-upload"></i> Importar Dados
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="{{ url_for('ci.listar') }}" class="btn btn-info w-100 text-white">
-                            <i class="bi bi-search"></i> Buscar Colaboradores
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="{{ url_for('reports.index') }}" class="btn btn-secondary w-100">
-                            <i class="bi bi-file-earmark-text"></i> Relatórios
-                        </a>
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-bolt me-2"></i>Ações Rápidas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('ci.novo') }}" class="btn btn-primary btn-lg w-100 py-3">
+                                <i class="fas fa-user-plus fa-2x mb-2"></i><br>
+                                Novo Colaborador
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('import.importar') }}" class="btn btn-success btn-lg w-100 py-3">
+                                <i class="fas fa-file-import fa-2x mb-2"></i><br>
+                                Importar Ativos
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('ci.listar') }}" class="btn btn-info btn-lg w-100 py-3">
+                                <i class="fas fa-search fa-2x mb-2"></i><br>
+                                Buscar Colaborador
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('reports.index') }}" class="btn btn-warning btn-lg w-100 py-3">
+                                <i class="fas fa-chart-bar fa-2x mb-2"></i><br>
+                                Gerar Relatório
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,39 +266,46 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
-{% if estatisticas.distribuicao_empresa %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% block scripts %}
 <script>
-    // Gráfico de distribuição por empresa
-    const ctx = document.getElementById('empresaChart');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: {{ estatisticas.distribuicao_empresa | map(attribute='empresa') | list | tojson }},
-            datasets: [{
-                label: 'Colaboradores por Empresa',
-                data: {{ estatisticas.distribuicao_empresa | map(attribute='total') | list | tojson }},
-                backgroundColor: [
-                    'rgba(13, 110, 253, 0.8)',
-                    'rgba(25, 135, 84, 0.8)',
-                    'rgba(255, 193, 7, 0.8)',
-                    'rgba(220, 53, 69, 0.8)',
-                    'rgba(13, 202, 240, 0.8)'
-                ],
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
+// Distribuição por Empresa Chart
+{% if estatisticas.distribuicao_empresa %}
+var ctx = document.getElementById('empresaChart').getContext('2d');
+var empresaChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: [
+            {% for item in estatisticas.distribuicao_empresa %}
+            '{{ item.empresa }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            data: [
+                {% for item in estatisticas.distribuicao_empresa %}
+                {{ item.total }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', 
+                '#e74a3b', '#6f42c1', '#fd7e14', '#20c997'
+            ],
+            hoverBackgroundColor: [
+                '#2e59d9', '#17a673', '#2c9faf', '#f4b619',
+                '#e02d1b', '#5a32a3', '#fd7e14', '#17a673'
+            ],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
             }
-        }
-    });
-</script>
+        },
+        cutout: '70%',
+    },
+});
 {% endif %}
+</script>
 {% endblock %}

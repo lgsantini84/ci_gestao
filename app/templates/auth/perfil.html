@@ -1,0 +1,259 @@
+<!-- templates/auth/perfil.html -->
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-user-circle me-2"></i>Meu Perfil
+            </h1>
+            <p class="text-muted mb-0">Gerencie suas informações pessoais</p>
+        </div>
+        <div>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-user me-2"></i>Informações Pessoais
+                    </h6>
+                </div>
+                <div class="card-body text-center">
+                    <!-- User Avatar -->
+                    <div class="mb-4">
+                        <div class="avatar-lg mx-auto">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                 style="width: 120px; height: 120px; font-size: 48px;">
+                                {{ current_user.nome[0]|upper }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Details -->
+                    <h5 class="fw-bold text-gray-900">{{ current_user.nome }}</h5>
+                    <p class="text-muted mb-2">{{ current_user.email }}</p>
+                    
+                    <!-- User Type Badge -->
+                    <div class="mb-3">
+                        {% if current_user.is_admin %}
+                        <span class="badge bg-warning">
+                            <i class="fas fa-user-shield me-1"></i>Administrador
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-user me-1"></i>Usuário
+                        </span>
+                        {% endif %}
+                        
+                        {% if current_user.ativo %}
+                        <span class="badge bg-success ms-1">
+                            <i class="fas fa-check-circle me-1"></i>Ativo
+                        </span>
+                        {% else %}
+                        <span class="badge bg-danger ms-1">
+                            <i class="fas fa-times-circle me-1"></i>Inativo
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- User Stats -->
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="border rounded p-3">
+                                <h6 class="text-primary mb-1">Usuário</h6>
+                                <p class="mb-0 fw-bold">{{ current_user.username }}</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-3">
+                                <h6 class="text-primary mb-1">Membro desde</h6>
+                                <p class="mb-0 fw-bold">
+                                    {{ current_user.created_at|to_brasilia|strftime('%d/%m/%Y') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Last Login -->
+                    <div class="mt-4">
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-sign-in-alt me-1"></i>
+                            Último login: 
+                            {% if current_user.last_login %}
+                            <strong>{{ current_user.last_login|to_brasilia|strftime('%d/%m/%Y %H:%M') }}</strong>
+                            {% else %}
+                            <strong>Nunca</strong>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-bolt me-2"></i>Ações Rápidas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('auth.editar_perfil') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i>Editar Perfil
+                        </a>
+                        <a href="{{ url_for('auth.alterar_senha') }}" class="btn btn-outline-warning">
+                            <i class="fas fa-key me-2"></i>Alterar Senha
+                        </a>
+                        <a href="{{ url_for('main.help') }}" class="btn btn-outline-info">
+                            <i class="fas fa-question-circle me-2"></i>Ajuda
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="col-xl-8 col-lg-7 mb-4">
+            <!-- Personal Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>Detalhes do Perfil
+                    </h6>
+                    <a href="{{ url_for('auth.editar_perfil') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Nome Completo</label>
+                            <p class="fw-bold">{{ current_user.nome }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Email</label>
+                            <p class="fw-bold">{{ current_user.email }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Nome de Usuário</label>
+                            <p class="fw-bold">{{ current_user.username }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Tipo de Usuário</label>
+                            <p class="fw-bold">
+                                {% if current_user.is_admin %}
+                                Administrador
+                                {% else %}
+                                Usuário
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Status</label>
+                            <p class="fw-bold">
+                                {% if current_user.ativo %}
+                                <span class="text-success">Ativo</span>
+                                {% else %}
+                                <span class="text-danger">Inativo</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Data de Criação</label>
+                            <p class="fw-bold">
+                                {{ current_user.created_at|to_brasilia|strftime('%d/%m/%Y %H:%M:%S') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-warning">
+                        <i class="fas fa-shield-alt me-2"></i>Segurança
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>Dicas de Segurança
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>Use uma senha forte e única</li>
+                            <li>Altere sua senha periodicamente</li>
+                            <li>Nunca compartilhe suas credenciais</li>
+                            <li>Desconecte-se ao usar computadores públicos</li>
+                            <li>Relate atividades suspeitas</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('auth.alterar_senha') }}" class="btn btn-warning">
+                            <i class="fas fa-key me-2"></i>Alterar Senha
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Information -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-info">
+                        <i class="fas fa-history me-2"></i>Atividade Recente
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if current_user.last_login %}
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="fw-bold">Último Login</h6>
+                                <p class="text-muted small mb-0">
+                                    {{ current_user.last_login|to_brasilia|strftime('%d/%m/%Y às %H:%M:%S') }}
+                                    <br>
+                                    IP: {{ session.get('last_ip', 'N/A') }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="fw-bold">Conta Criada</h6>
+                                <p class="text-muted small mb-0">
+                                    {{ current_user.created_at|to_brasilia|strftime('%d/%m/%Y às %H:%M:%S') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-4">
+                        <i class="fas fa-info-circle fa-2x mb-3"></i><br>
+                        Nenhuma atividade registrada
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

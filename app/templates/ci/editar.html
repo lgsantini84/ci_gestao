@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if ci else 'Novo' }} Colaborador{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-user-edit me-2"></i>{{ 'Editar' if ci else 'Novo' }} Colaborador
+        </h1>
+        <a href="{{ url_for('ci.listar') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Voltar
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('ci.editar', id=ci.id) if ci else url_for('ci.novo') }}">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nome Completo *</label>
+                        <input type="text" name="nome" class="form-control" required
+                               value="{{ form_data.nome if form_data else (ci.nome if ci else '') }}">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">CPF *</label>
+                        <input type="text" name="cpf" class="form-control" required
+                               value="{{ form_data.cpf if form_data else (ci.cpf if ci else '') }}"
+                               {{ 'readonly' if ci }}>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Data de Nascimento</label>
+                        <input type="date" name="data_nascimento" class="form-control"
+                               value="{{ form_data.data_nascimento if form_data else (ci.data_nascimento.strftime('%Y-%m-%d') if ci and ci.data_nascimento else '') }}">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Empresa</label>
+                        <select name="empresa" class="form-select">
+                            <option value="">Selecione...</option>
+                            <option value="MATRIZ" {{ 'selected' if (form_data and form_data.empresa == 'MATRIZ') or (ci and ci.empresa == 'MATRIZ') }}>Matriz</option>
+                            <option value="FILIAL" {{ 'selected' if (form_data and form_data.empresa == 'FILIAL') or (ci and ci.empresa == 'FILIAL') }}>Filial</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Cargo</label>
+                        <input type="text" name="cargo" class="form-control"
+                               value="{{ form_data.cargo if form_data else (ci.cargo if ci else '') }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Setor</label>
+                        <input type="text" name="setor" class="form-control"
+                               value="{{ form_data.setor if form_data else (ci.setor if ci else '') }}">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Data de Admissao</label>
+                        <input type="date" name="data_admissao" class="form-control"
+                               value="{{ form_data.data_admissao if form_data else (ci.data_admissao.strftime('%Y-%m-%d') if ci and ci.data_admissao else '') }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ form_data.email if form_data else (ci.email if ci else '') }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Telefone</label>
+                        <input type="text" name="telefone" class="form-control"
+                               value="{{ form_data.telefone if form_data else (ci.telefone if ci else '') }}">
+                    </div>
+                </div>
+
+                {% if not ci %}
+                <hr>
+                <h5 class="mb-3"><i class="fas fa-id-card me-2"></i>Numero de Cadastro (NC)</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">NC *</label>
+                        <input type="text" name="nc" class="form-control" required
+                               value="{{ form_data.nc if form_data else '' }}">
+                    </div>
+                </div>
+                {% endif %}
+
+                <hr>
+                <div class="d-flex justify-content-end">
+                    <a href="{{ url_for('ci.listar') }}" class="btn btn-secondary me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

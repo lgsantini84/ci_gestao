@@ -1,11 +1,70 @@
+<!-- templates/errors/404.html -->
 {% extends "base.html" %}
-{% block title %}404 - Não Encontrado{% endblock %}
+
+{% block title %}Página Não Encontrada{% endblock %}
+
 {% block content %}
-<div class="text-center mt-5">
-    <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 8rem;"></i>
-    <h1 class="display-1">404</h1>
-    <h2>Página Não Encontrada</h2>
-    <p class="lead text-muted">A página que você procura não existe.</p>
-    <a href="/" class="btn btn-primary btn-lg">Voltar ao Início</a>
+<div class="container-fluid">
+    <div class="text-center mt-5">
+        <div class="error mx-auto" data-text="404">404</div>
+        <p class="lead text-gray-800 mb-4">Página Não Encontrada</p>
+        <p class="text-gray-500 mb-4">
+            A página que você está procurando não existe ou foi movida.
+        </p>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">
+                            <i class="fas fa-search me-2"></i>O que fazer?
+                        </h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Verifique se o endereço está correto
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Volte para a página anterior
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Use a navegação do sistema
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Contate o administrador se necessário
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary me-2">
+                <i class="fas fa-home me-2"></i>Ir para o Dashboard
+            </a>
+            <button onclick="history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </button>
+        </div>
+    </div>
 </div>
+
+<style>
+.error {
+    color: #4e73df;
+    font-size: 10rem;
+    font-weight: 700;
+    line-height: 1;
+    position: relative;
+    text-shadow: 0.05em 0.05em 0 rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .error {
+        font-size: 6rem;
+    }
+}
+</style>
 {% endblock %}

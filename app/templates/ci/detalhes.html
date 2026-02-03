@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes - {{ ci.nome }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-user me-2"></i>{{ ci.nome }}
+        </h1>
+        <div>
+            <a href="{{ url_for('ci.editar', id=ci.id) }}" class="btn btn-warning">
+                <i class="fas fa-edit me-1"></i> Editar
+            </a>
+            <a href="{{ url_for('ci.listar') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Dados Principais -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-1"></i> Dados Pessoais
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">CPF:</th>
+                            <td>{{ ci.cpf }}</td>
+                        </tr>
+                        <tr>
+                            <th>Data de Nascimento:</th>
+                            <td>{{ ci.data_nascimento|strftime('%d/%m/%Y') if ci.data_nascimento else '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ ci.email or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Telefone:</th>
+                            <td>{{ ci.telefone or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                {% if ci.ativo %}
+                                <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inativo</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dados Profissionais -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-briefcase me-1"></i> Dados Profissionais
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">Empresa:</th>
+                            <td>{{ ci.empresa or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Cargo:</th>
+                            <td>{{ ci.cargo or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Setor:</th>
+                            <td>{{ ci.setor or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Data de Admissao:</th>
+                            <td>{{ ci.data_admissao|strftime('%d/%m/%Y') if ci.data_admissao else '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>NC Atual:</th>
+                            <td>
+                                {% if ci.nc_atual %}
+                                <span class="badge bg-primary">{{ ci.nc_atual.numero }}</span>
+                                {% else %}
+                                <span class="text-muted">Sem NC</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historico de NCs -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-history me-1"></i> Historico de NCs</span>
+        </div>
+        <div class="card-body">
+            {% if ci.numeros_cadastro %}
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>NC</th>
+                        <th>Data Inicio</th>
+                        <th>Data Fim</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nc in ci.numeros_cadastro %}
+                    <tr>
+                        <td>{{ nc.numero }}</td>
+                        <td>{{ nc.data_inicio|strftime('%d/%m/%Y') if nc.data_inicio else '-' }}</td>
+                        <td>{{ nc.data_fim|strftime('%d/%m/%Y') if nc.data_fim else '-' }}</td>
+                        <td>
+                            {% if nc.ativo %}
+                            <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inativo</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted mb-0">Nenhum NC registrado</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Dependentes -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-users me-1"></i> Dependentes</span>
+            <a href="{{ url_for('ci.novo_dependente', id=ci.id) }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> Adicionar
+            </a>
+        </div>
+        <div class="card-body">
+            {% if ci.dependentes %}
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Parentesco</th>
+                        <th>Data Nascimento</th>
+                        <th>Acoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dep in ci.dependentes %}
+                    <tr>
+                        <td>{{ dep.nome }}</td>
+                        <td>{{ dep.cpf or '-' }}</td>
+                        <td>{{ dep.parentesco or '-' }}</td>
+                        <td>{{ dep.data_nascimento|strftime('%d/%m/%Y') if dep.data_nascimento else '-' }}</td>
+                        <td>
+                            <a href="{{ url_for('ci.editar_dependente', ci_id=ci.id, dep_id=dep.id) }}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted mb-0">Nenhum dependente registrado</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

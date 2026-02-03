@@ -1,5 +1,5 @@
 # app/routes/import_routes.py
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session, send_file
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session, send_file, current_app
 from flask_login import login_required, current_user
 from app import db
 from app.models import ImportacaoLog, ColaboradorInterno, NumeroCadastro
@@ -22,7 +22,7 @@ import_bp = Blueprint('import', __name__)
 @import_bp.route('/importar', methods=['GET', 'POST'])
 @login_required
 def importar():
-    from app import current_app as app
+    app = current_app
     
     if request.method == 'POST':
         arquivos = request.files.getlist('arquivos[]')
@@ -122,7 +122,7 @@ def importar():
         return redirect(url_for('import.importar'))
 
     # GET
-    return render_template('import.html',
+    return render_template('importacao/index.html',
         importacoes=ImportacaoLog.query.order_by(ImportacaoLog.data_importacao.desc()).limit(10).all(),
         current_date=datetime.now(),
         valid_company_codes=app.config['VALID_COMPANY_CODES'],
@@ -134,6 +134,7 @@ def importar():
 @import_bp.route('/importar/historico')
 @login_required
 def historico_importacoes():
+    app = current_app
     page = request.args.get('page', 1, type=int)
     tipo = request.args.get('tipo', '')
     status = request.args.get('status', '')
@@ -169,7 +170,7 @@ def historico_importacoes():
 @login_required
 def limpar_duplicados_coparticipacao_route():
     """Rota para limpar duplicados de coparticipação."""
-    from app import current_app as app
+    app = current_app
     
     competencia = request.form.get('competencia', '').strip() or None
     contrato = request.form.get('contrato', '').strip() or None
@@ -186,7 +187,7 @@ def limpar_duplicados_coparticipacao_route():
 @login_required
 def exportar_coparticipacao_geral():
     """Exporta todos os atendimentos de coparticipação do sistema."""
-    from app import current_app as app
+    app = current_app
     from app.models import AtendimentoCoparticipacao, PlanoSaude
     
     # Buscar todos os atendimentos

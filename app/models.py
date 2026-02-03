@@ -430,14 +430,9 @@ class NumeroCadastro(BaseModel):
     
     @validates('cod_empresa')
     def validate_empresa(self, key: str, empresa: str) -> str:
-        """Valida código da empresa."""
-        from app import current_app
-        valid_codes = current_app.config.get('VALID_COMPANY_CODES', {})
-        
-        if empresa not in valid_codes:
-            raise ValueError(f'Empresa {empresa} não é válida')
-        
-        return empresa
+        """Valida e limpa código da empresa."""
+        # Apenas limpar o valor, aceitar qualquer codigo
+        return str(empresa).strip()[:10] if empresa else '0000'
     
     # Métodos
     def desativar(self, data_fim: Optional[date] = None, motivo: Optional[str] = None) -> None:

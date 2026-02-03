@@ -1,0 +1,218 @@
+<!-- templates/auth/alterar_senha.html -->
+{% extends "base.html" %}
+
+{% block title %}Alterar Senha{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-key me-2"></i>Alterar Senha
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="senha_atual" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Senha Atual *
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="senha_atual" 
+                                       name="senha_atual" required>
+                                <button class="btn btn-outline-secondary" type="button" 
+                                        id="toggleCurrentPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Por favor, informe sua senha atual.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nova_senha" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Nova Senha *
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="nova_senha" 
+                                       name="nova_senha" required minlength="6">
+                                <button class="btn btn-outline-secondary" type="button" 
+                                        id="toggleNewPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                Mínimo 6 caracteres. Use letras, números e símbolos.
+                            </div>
+                            <div class="password-strength mt-2">
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar" id="passwordStrength" 
+                                         role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <small id="passwordStrengthText" class="text-muted"></small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="confirmar_senha" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Confirmar Nova Senha *
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="confirmar_senha" 
+                                       name="confirmar_senha" required>
+                                <button class="btn btn-outline-secondary" type="button" 
+                                        id="toggleConfirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback" id="confirmPasswordFeedback">
+                                As senhas não conferem.
+                            </div>
+                        </div>
+
+                        <!-- Password Requirements -->
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-shield-alt me-2"></i>Requisitos de Senha
+                            </h6>
+                            <ul class="mb-0 small">
+                                <li>Mínimo 6 caracteres</li>
+                                <li>Recomendado usar letras maiúsculas e minúsculas</li>
+                                <li>Adicione números e símbolos para maior segurança</li>
+                                <li>Evite senhas usadas anteriormente</li>
+                                <li>Não use informações pessoais (nome, data de nascimento, etc.)</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Alterar Senha
+                            </button>
+                            <a href="{{ url_for('auth.perfil') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Toggle password visibility
+    $('#toggleCurrentPassword').click(function() {
+        var input = $('#senha_atual');
+        var type = input.attr('type') === 'password' ? 'text' : 'password';
+        input.attr('type', type);
+        $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+    });
+    
+    $('#toggleNewPassword').click(function() {
+        var input = $('#nova_senha');
+        var type = input.attr('type') === 'password' ? 'text' : 'password';
+        input.attr('type', type);
+        $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+    });
+    
+    $('#toggleConfirmPassword').click(function() {
+        var input = $('#confirmar_senha');
+        var type = input.attr('type') === 'password' ? 'text' : 'password';
+        input.attr('type', type);
+        $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+    });
+    
+    // Password strength indicator
+    $('#nova_senha').on('keyup', function() {
+        var password = $(this).val();
+        var strength = 0;
+        var text = '';
+        var color = '';
+        
+        // Length check
+        if (password.length >= 6) strength += 20;
+        if (password.length >= 8) strength += 20;
+        
+        // Complexity checks
+        if (/[a-z]/.test(password)) strength += 20;
+        if (/[A-Z]/.test(password)) strength += 20;
+        if (/[0-9]/.test(password)) strength += 10;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+        
+        // Update progress bar
+        $('#passwordStrength').css('width', strength + '%');
+        
+        // Update text
+        if (strength < 40) {
+            color = 'danger';
+            text = 'Fraca';
+        } else if (strength < 70) {
+            color = 'warning';
+            text = 'Média';
+        } else if (strength < 90) {
+            color = 'info';
+            text = 'Boa';
+        } else {
+            color = 'success';
+            text = 'Forte';
+        }
+        
+        $('#passwordStrength')
+            .removeClass('bg-danger bg-warning bg-info bg-success')
+            .addClass('bg-' + color);
+        $('#passwordStrengthText')
+            .removeClass('text-danger text-warning text-info text-success')
+            .addClass('text-' + color)
+            .text('Força da senha: ' + text + ' (' + strength + '%)');
+    });
+    
+    // Password confirmation validation
+    $('#confirmar_senha').on('keyup', function() {
+        var password = $('#nova_senha').val();
+        var confirmPassword = $(this).val();
+        
+        if (password !== confirmPassword) {
+            $(this).addClass('is-invalid');
+            $('#confirmPasswordFeedback').show();
+        } else {
+            $(this).removeClass('is-invalid');
+            $('#confirmPasswordFeedback').hide();
+        }
+    });
+    
+    // Form validation
+    (function() {
+        'use strict'
+        
+        var forms = document.querySelectorAll('.needs-validation')
+        
+        Array.prototype.slice.call(forms)
+            .forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    // Check password match
+                    var password = $('#nova_senha').val();
+                    var confirmPassword = $('#confirmar_senha').val();
+                    if (password !== confirmPassword) {
+                        $('#confirmar_senha').addClass('is-invalid');
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,302 @@
+<!-- templates/auth/usuarios.html -->
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Usuários{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-users-cog me-2"></i>Gerenciar Usuários
+            </h1>
+            <p class="text-muted mb-0">Administre os usuários do sistema</p>
+        </div>
+        <div>
+            <a href="{{ url_for('auth.novo_usuario') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Novo Usuário
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                Total de Usuários
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ estatisticas.total }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                Usuários Ativos
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ estatisticas.ativos }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                Administradores
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ estatisticas.admins }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">
+                                Usuários Inativos
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ estatisticas.inativos }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-slash fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="fas fa-filter me-2"></i>Filtros
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Buscar</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="{{ filtros.search or '' }}" placeholder="Nome, usuário ou email">
+                </div>
+                <div class="col-md-3">
+                    <label for="tipo" class="form-label">Tipo de Usuário</label>
+                    <select class="form-select" id="tipo" name="tipo">
+                        <option value="">Todos os tipos</option>
+                        <option value="admin" {% if filtros.tipo == 'admin' %}selected{% endif %}>
+                            Administrador
+                        </option>
+                        <option value="usuario" {% if filtros.tipo == 'usuario' %}selected{% endif %}>
+                            Usuário
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">Todos</option>
+                        <option value="ativo" {% if filtros.status == 'ativo' %}selected{% endif %}>
+                            Ativos
+                        </option>
+                        <option value="inativo" {% if filtros.status == 'inativo' %}selected{% endif %}>
+                            Inativos
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="fas fa-table me-2"></i>Lista de Usuários
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered datatable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Último Login</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr>
+                            <td>{{ usuario.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar me-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                             style="width: 40px; height: 40px;">
+                                            {{ usuario.nome[0]|upper }}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong>{{ usuario.nome }}</strong>
+                                        {% if usuario.id == current_user.id %}
+                                        <span class="badge bg-info ms-2">Você</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ usuario.username }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>
+                                {% if usuario.tipo_usuario == 'admin' %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-user-shield me-1"></i>Administrador
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-user me-1"></i>Usuário
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if usuario.ativo %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Ativo
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times-circle me-1"></i>Inativo
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if usuario.last_login %}
+                                <small class="text-muted">
+                                    {{ usuario.last_login|to_brasilia|strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                                {% else %}
+                                <span class="text-muted">Nunca</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ url_for('auth.editar_usuario', id=usuario.id) }}" 
+                                       class="btn btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    
+                                    {% if usuario.id != current_user.id %}
+                                    {% if usuario.ativo %}
+                                    <button type="button" class="btn btn-outline-warning" 
+                                            data-bs-toggle="modal" data-bs-target="#resetPasswordModal{{ usuario.id }}"
+                                            title="Resetar Senha">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <form method="POST" 
+                                          action="{{ url_for('auth.excluir_usuario', id=usuario.id) }}" 
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger confirm-delete" 
+                                                title="Desativar">
+                                            <i class="fas fa-user-slash"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <form method="POST" 
+                                          action="{{ url_for('auth.reativar_usuario', id=usuario.id) }}" 
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-outline-success" 
+                                                title="Reativar">
+                                            <i class="fas fa-user-check"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    {% else %}
+                                    <button type="button" class="btn btn-outline-secondary" disabled 
+                                            title="Você">
+                                        <i class="fas fa-user"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Reset Password Modal -->
+                        {% if usuario.id != current_user.id %}
+                        <div class="modal fade" id="resetPasswordModal{{ usuario.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-key me-2"></i>Resetar Senha
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Tem certeza que deseja resetar a senha do usuário 
+                                           <strong>{{ usuario.nome }}</strong>?</p>
+                                        <p class="text-warning">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            Uma nova senha temporária será gerada.
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" 
+                                                data-bs-dismiss="modal">Cancelar</button>
+                                        <form method="POST" 
+                                              action="{{ url_for('auth.resetar_senha_usuario', id=usuario.id) }}">
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="fas fa-key me-1"></i>Resetar Senha
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Historico de Importacoes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-history me-2"></i>Historico de Importacoes
+        </h1>
+        <a href="{{ url_for('import.importar') }}" class="btn btn-primary">
+            <i class="fas fa-file-import me-1"></i> Nova Importacao
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i> Filtros
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Tipo</label>
+                    <select name="tipo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="ATIVOS" {{ 'selected' if tipo == 'ATIVOS' }}>Ativos</option>
+                        <option value="DESLIGADOS" {{ 'selected' if tipo == 'DESLIGADOS' }}>Desligados</option>
+                        <option value="UNIMED" {{ 'selected' if tipo == 'UNIMED' }}>Unimed</option>
+                        <option value="HAPVIDA_SAUDE" {{ 'selected' if tipo == 'HAPVIDA_SAUDE' }}>Hapvida Saude</option>
+                        <option value="HAPVIDA_ODONTO" {{ 'selected' if tipo == 'HAPVIDA_ODONTO' }}>Hapvida Odonto</option>
+                        <option value="ODONTOPREV" {{ 'selected' if tipo == 'ODONTOPREV' }}>Odontoprev</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="SUCESSO" {{ 'selected' if status == 'SUCESSO' }}>Sucesso</option>
+                        <option value="ERRO" {{ 'selected' if status == 'ERRO' }}>Erro</option>
+                        <option value="PARCIAL" {{ 'selected' if status == 'PARCIAL' }}>Parcial</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Data Inicio</label>
+                    <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Data Fim</label>
+                    <input type="date" name="data_fim" class="form-control" value="{{ data_fim }}">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('import.historico_importacoes') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Limpar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Tipo</th>
+                            <th>Arquivo</th>
+                            <th>Registros</th>
+                            <th>Status</th>
+                            <th>Usuario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for imp in importacoes %}
+                        <tr>
+                            <td>{{ imp.data_importacao|to_brasilia|strftime('%d/%m/%Y %H:%M') if imp.data_importacao else '-' }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ imp.tipo_importacao }}</span>
+                            </td>
+                            <td>{{ imp.arquivo or '-' }}</td>
+                            <td>
+                                {% if imp.linhas_processadas %}
+                                {{ imp.linhas_processadas }} processados
+                                {% if imp.linhas_erro %}
+                                <br><small class="text-danger">{{ imp.linhas_erro }} erros</small>
+                                {% endif %}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if imp.status == 'SUCESSO' %}
+                                <span class="badge bg-success">Sucesso</span>
+                                {% elif imp.status == 'ERRO' %}
+                                <span class="badge bg-danger">Erro</span>
+                                {% elif imp.status == 'PARCIAL' %}
+                                <span class="badge bg-warning">Parcial</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ imp.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ imp.usuario.nome if imp.usuario else '-' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Nenhuma importacao encontrada</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if pagination and pagination.pages > 1 %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('import.historico_importacoes', page=pagination.prev_num, tipo=tipo, status=status, data_inicio=data_inicio, data_fim=data_fim) }}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    {% for page in pagination.iter_pages() %}
+                        {% if page %}
+                        <li class="page-item {{ 'active' if page == pagination.page }}">
+                            <a class="page-link" href="{{ url_for('import.historico_importacoes', page=page, tipo=tipo, status=status, data_inicio=data_inicio, data_fim=data_fim) }}">{{ page }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('import.historico_importacoes', page=pagination.next_num, tipo=tipo, status=status, data_inicio=data_inicio, data_fim=data_fim) }}">Proximo</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

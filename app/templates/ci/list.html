@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Colaboradores Internos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-users me-2"></i>Colaboradores Internos
+        </h1>
+        <a href="{{ url_for('ci.novo') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Novo Colaborador
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i> Filtros
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Nome</label>
+                    <input type="text" name="nome" class="form-control" value="{{ filtros.nome or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">CPF</label>
+                    <input type="text" name="cpf" class="form-control" value="{{ filtros.cpf or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Empresa</label>
+                    <select name="empresa" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="MATRIZ" {{ 'selected' if filtros.empresa == 'MATRIZ' }}>Matriz</option>
+                        <option value="FILIAL" {{ 'selected' if filtros.empresa == 'FILIAL' }}>Filial</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="ativo" {{ 'selected' if filtros.status == 'ativo' }}>Ativo</option>
+                        <option value="inativo" {{ 'selected' if filtros.status == 'inativo' }}>Inativo</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('ci.listar') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Limpar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>NC Atual</th>
+                            <th>Empresa</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ci in cis %}
+                        <tr>
+                            <td>{{ ci.nome }}</td>
+                            <td>{{ ci.cpf }}</td>
+                            <td>{{ ci.nc_atual.numero if ci.nc_atual else '-' }}</td>
+                            <td>{{ ci.empresa or '-' }}</td>
+                            <td>
+                                {% if ci.ativo %}
+                                <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('ci.detalhes', id=ci.id) }}" class="btn btn-sm btn-info" title="Detalhes">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ url_for('ci.editar', id=ci.id) }}" class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Nenhum colaborador encontrado</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if pagination and pagination.pages > 1 %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(pagination.route, page=pagination.prev_num, **filtros) }}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    {% for page in pagination.iter_pages() %}
+                        {% if page %}
+                        <li class="page-item {{ 'active' if page == pagination.page }}">
+                            <a class="page-link" href="{{ url_for(pagination.route, page=page, **filtros) }}">{{ page }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(pagination.route, page=pagination.next_num, **filtros) }}">Próximo</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -107,10 +107,15 @@ def register_blueprints(app):
 
 def register_template_filters(app):
     """Registrar filtros de template."""
-    from app.utils.data_utils import to_brasilia, from_json
-    
+    from datetime import datetime
+    from app.utils.data_utils import to_brasilia, from_json, strftime
+    from app.services.alert_service import AlertService
+
     app.jinja_env.filters['to_brasilia'] = to_brasilia
     app.jinja_env.filters['from_json'] = from_json
+    app.jinja_env.filters['strftime'] = strftime
+    app.jinja_env.globals['now'] = datetime.utcnow
+    app.jinja_env.globals['get_alert_service'] = lambda: AlertService()
 
 
 def register_error_handlers(app):

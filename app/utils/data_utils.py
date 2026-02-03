@@ -10,9 +10,9 @@ import pytz
 _TZ = pytz.timezone('America/Sao_Paulo')
 
 def to_brasilia(dt):
-    """Converte datetime para fuso horário de Brasília."""
+    """Converte datetime para fuso horário de Brasília (retorna datetime)."""
     if dt is None:
-        return ''
+        return None
     if isinstance(dt, str):
         try:
             dt = parser.parse(dt)
@@ -20,7 +20,16 @@ def to_brasilia(dt):
             return dt
     if dt.tzinfo is None:
         dt = pytz.utc.localize(dt)
-    return dt.astimezone(_TZ).strftime('%d/%m/%Y %H:%M')
+    return dt.astimezone(_TZ)
+
+
+def strftime(dt, fmt='%d/%m/%Y %H:%M'):
+    """Formata datetime usando strftime."""
+    if dt is None:
+        return ''
+    if isinstance(dt, str):
+        return dt
+    return dt.strftime(fmt)
 
 def from_json(value):
     """Tenta carregar uma string como JSON."""
