@@ -1,0 +1,46 @@
+gestao_ci/
+├── app.py
+├── config.py
+├── requirements.txt
+├── requirements_dev.txt
+├── .env.example
+├── .gitignore
+├── run.py
+├── wsgi.py
+├── alembic/ (migrações futuras)
+│   └── ...
+├── app/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── file_utils.py
+│   │   ├── import_utils.py
+│   │   ├── data_utils.py
+│   │   └── validators.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── import_service.py
+│   │   ├── alert_service.py
+│   │   ├── ci_service.py
+│   │   └── report_service.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── ci.py
+│   │   ├── import_routes.py
+│   │   ├── alerts.py
+│   │   ├── reports.py
+│   │   └── api.py
+│   ├── templates/
+│   │   └── ... (mantidos os mesmos)
+│   ├── static/
+│   │   └── ... (mantidos os mesmos)
+│   └── decorators.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_models.py
+│   ├── test_utils.py
+│   └── test_routes.py
+└── uploads/
+    └── ... (mantido)
